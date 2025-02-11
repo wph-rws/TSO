@@ -14,9 +14,15 @@ from read_individual_files import read_individual_files
 def generate_filelist(location, measurement_date='latest'):
     
     _, _, location_data = get_location_info(location)
-
-    workdir = pathlib.Path.cwd() / f'{location_data}'
+    
+    project_dirs = load_project_dirs()
+    indiv_files_dir = pathlib.Path(project_dirs.get('individual_files_dir'))
+    
+    workdir = indiv_files_dir / f'{location_data}'
     all_dirs = sorted(glob.glob(str(workdir)+'/*/', recursive = True))
+
+    # workdir = pathlib.Path.cwd() / f'{location_data}'
+    # all_dirs = sorted(glob.glob(str(workdir)+'/*/', recursive = True))
     
     # Filter all map names where the last part has 8 digits, e.g. 20240401
     filtered_dirs = [d for d in all_dirs if re.match(r'^.*[\\/]\d{8}', d)]
@@ -36,10 +42,10 @@ def generate_filelist(location, measurement_date='latest'):
     
     return filelist
 
-#%%
+#%% Function to get all directories with indiviudal measurement files
 
-# Function to get all directories with indiviudal measurement files
 def get_all_datafiles(location, plot_mode='single'):
+    
     # Get location code
     location_code, _ , location_data = get_location_info(location)    
    
@@ -73,9 +79,8 @@ def get_all_datafiles(location, plot_mode='single'):
     
     return filelist_datafiles
 
-#%%
+#%% Function to get all directories with indiviudal measurement files
 
-# Function to get all directories with indiviudal measurement files
 def get_measurement_dirs(location):
         
     # Get location code
@@ -94,7 +99,7 @@ def get_measurement_dirs(location):
     
     return list_measurement_dirs
 
-#%%
+#%% Function to find the name of a directory of a certain measurement
 
 def find_dirname_measurement(location, measurement_date='latest'):
     list_measurement_dirs = get_measurement_dirs(location)
@@ -131,9 +136,7 @@ def find_dirname_measurement(location, measurement_date='latest'):
     
     return dirname
 
-
-
-#%%
+#%% Function to find the filename of a datafile
 
 def find_filename_datafile(location, measurement_date='latest', plot_mode='single'):
     
@@ -177,9 +180,8 @@ def find_filename_datafile(location, measurement_date='latest', plot_mode='singl
             
     return filename_datafile
 
-#%% 
+#%% Function to get location code or location name from location
 
-# Function to get location code or location name from location
 def get_location_info(location):
     
     # Load data from YAML file
@@ -408,9 +410,8 @@ def update_format_missing_parameters(format_list, columns_with_only_na):
     
     return updated_formats
 
-#%%
+#%% Function to print the measurement info of the output file
 
-# Function to print the measurement info of the output file
 def print_measurement_info(measurement_info):
     
     measurement_info_header = ''

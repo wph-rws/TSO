@@ -58,11 +58,11 @@ for location in locations:
 
 #%%
 
-measurement_date = -2
+# measurement_date = -2
 
-for location in locations:
-    filelist = generate_filelist(location, measurement_date)
-    write_datafile(location, filelist, measurement_date)
+# for location in locations:
+#     filelist = generate_filelist(location, measurement_date)
+#     write_datafile(location, filelist, measurement_date)
 
 # %% With measurement date
 # location = 'veer'

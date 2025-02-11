@@ -8,6 +8,7 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import yaml
+import pathlib
 
 from io import BytesIO
 from PIL import Image
@@ -20,6 +21,8 @@ from pyproj import Transformer
 from scipy import ndimage
 from owslib.wfs import WebFeatureService
 from owslib.wms import WebMapService
+
+from tso_functions import load_project_dirs
 
 """
 Functie voor het plotten van het kaartje in de hoek van de profielen.
@@ -72,11 +75,16 @@ def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', 
             
         output_format ='image/png'
         transparent = True
-
-        # specify a path for the map image file
         
-        map_image_path_png = f'images/{location.lower()}_map.png'        
-        map_image_path_tiff = f'images/{location.lower()}_reprojected.tif'
+        project_dirs = load_project_dirs()
+        image_dir = pathlib.Path(project_dirs.get('images_dir'))
+        
+        # Create the directory if it doesn't exist
+        image_dir.mkdir(parents=True, exist_ok=True)
+
+        # Specify a path for the map image file        
+        map_image_path_png = image_dir / f'/{location.lower()}_map.png'        
+        map_image_path_tiff = image_dir / f'{location.lower()}_reprojected.tif'
     
         # geef limiet op voor leeftijd plaatje, als ouder: opnieuw ophalen
         age_limit = 3 * 60 * 60 * 24 * 31 # seconds in three months
