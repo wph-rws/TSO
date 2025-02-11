@@ -13,4 +13,4 @@ The processed data is published on this website:
 
 https://waterberichtgeving.rws.nl/owb/regio/regio-zeeuwse-wateren/zeeland-metingen/zeeland-metingen-tso
 
-The scripts can be used from the command line, but that may require commenting / commenting out of parts of the code. It may be easier to use it in a IDE like Spyder or create notebooks.
+The scripts can be used from the command line, but that may require commenting / uncommenting of parts of the code. It may be easier to use it in a IDE like Spyder or create notebooks.
