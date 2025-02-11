@@ -1,0 +1,18 @@
+# VERTIKAAL 13 M.C.ECOS 6 VERTIKAAL
+* 12-12-2024 15:11:48
+#X: 74145 - Y: 384650
+#00 DONARLOCATIE: ZTS-38
+#01 MEETPUNT: 1
+#08 WAARNEMER(S): bernaards
+@ par13.dat
+## TLU        oC <-->
+## LUCHTDK    hPa <1032>
+## WINDSHD    m/s <-->
+## WINDRTG    gradn <-->
+## BEWKGD     /8 <8>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH   GEL20  SALNTT     CL- CHFLYSI  TURBID PHYCOUG
+  74145  384650 20241212 151252    1.05    5.43    6.35   8.20    1.04     144    0.82     350    0.67    1.90    0.17
+  74145  384650 20241212 151254    1.07    5.46    6.35   8.20    1.04     144    0.82     350    0.58    1.98    0.21
+  74145  384650 20241212 151255    1.07    5.55    6.35   8.20    1.04     144    0.82     350    0.58    1.94    0.26
+  74145  384650 20241212 151256    1.05    5.56    6.35   8.20    1.04     144    0.82     350    0.65    1.89    0.27

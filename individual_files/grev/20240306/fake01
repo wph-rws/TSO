@@ -1,0 +1,17 @@
+# meetpunt 1 niet gemeten
+* 2024-03-06 00:00:00
+#X: 47466 - Y: 418850
+#00 DONARLOCATIE: SCHARDKDPPT
+#01 MEETPUNT: 1
+#08 WAARNEMER(S): bernaards
+@ par1.dat
+## TLU        oC <-->
+## LUCHTDK    hPa <1022>
+## WINDSHD    m/s <9999.9>
+## WINDRTG    gradn <279>
+## BEWKGD     /8 <6>
+
+
+~   X    Y    DATUM    TIJD   SENSHTE  
+47466 418850 20240306 235900 1.00
+47466 418850 20240306 235900 15.96
