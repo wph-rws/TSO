@@ -1,0 +1,18 @@
+# VERTIKAAL 15 M.C.ECOS 8 VERTIKAAL
+* 06-02-2025 14:36:00
+#X: 75510 - Y: 378297
+#00 DONARLOCATIE: ZTS-42
+#01 MEETPUNT: 1
+#08 WAARNEMER(S): bernaards
+@ par10.dat
+## TLU        oC <-->
+## LUCHTDK    hPa <1042>
+## WINDSHD    m/s <-->
+## WINDRTG    gradn <-->
+## BEWKGD     /8 <8>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH   GEL20  SALNTT     CL- CHLFRFU TROEBFN PHYCOUG
+  75510  378297 20250206 143600    1.01    4.95    4.72   8.23    1.58     228    1.33     640    1.55   35.08   -0.31
+  75510  378297 20250206 143607    1.98    3.65    4.72   8.23    1.58     228    1.33     641    1.48   41.34   -0.37
+  75510  378297 20250206 143610    2.93    2.56    4.72   8.23    1.58     228    1.33     642    1.62   38.89   -0.38
+  75510  378297 20250206 143613    3.88    1.65    4.72   8.23    1.58     228    1.33     642    1.52   39.25   -0.26
