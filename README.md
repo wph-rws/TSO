@@ -15,3 +15,33 @@ The processed data is published on this website:
 https://waterberichtgeving.rws.nl/owb/regio/regio-zeeuwse-wateren/zeeland-metingen/zeeland-metingen-tso
 
 The scripts can be used from the command line, but that may require commenting / uncommenting of parts of the code. It may be easier to use it in a IDE like Spyder or create notebooks.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+This project uses Conda to manage its dependencies. All required packages (with their exact versions) are listed in the environment.yaml file.
+
+How to Create the Environment:
+
+    - Install Conda:
+      If you haven’t already, install Miniconda or Anaconda.
+
+    -  Clone the Repository:
+      Make sure you have cloned this repository to your local machine.
+
+    -  Create the Environment:
+      Open a terminal, navigate to the project directory, and run:
+
+        conda env create -f environment.yaml
+
+      This command will create a new Conda environment (named tso, as specified in the file) with all the packages and versions defined.
+
+Activate the Environment:
+Once the environment is created, activate it by running:
+
+  conda activate tso
+
+Run the Project:
+With the environment active, you can run the project’s scripts or applications as described in the documentation.
+
+----------------------------------------------------------------------------------------------------------------------------------------------
