@@ -89,10 +89,10 @@ def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', 
         # geef limiet op voor leeftijd plaatje, als ouder: opnieuw ophalen
         age_limit = 3 * 60 * 60 * 24 * 31 # seconds in three months
 
-        # check if map exists and is not too old, else get new map
+        # Check if map exists and is not too old, else get new map
         if os.path.exists(map_image_path_png):
 
-            # get age of map from last modification time
+            # Get age of map from last modification time
             image_age = time.time() - os.path.getmtime(map_image_path_png)
 
             if image_age < age_limit and not force_refresh_image:
@@ -101,10 +101,14 @@ def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', 
                 if not img_data:
                     if rotation_angle == 0:
                         img_data = Image.open(map_image_path_png)
-                    else:
+                    elif os.path.exists(map_image_path_tiff):
                         img_data = Image.open(map_image_path_tiff)
+                    else:
+                        img = get_new_map(location, bbox, layer, coord_system, output_format, transparent, dx_img, dy_img)
+                        img_data = img
+                        img_data.save(map_image_path_png)
                         
-            # if too old or force_refresh == True
+            # If too old or force_refresh == True
             else:
                 img = get_new_map(location, bbox, layer, coord_system, output_format, transparent, dx_img, dy_img)
                 img_data = img
@@ -126,16 +130,11 @@ def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', 
     
             # Display the image with the defined extent
             ax.imshow(img_data, extent=extent)
-    
-            # Set the coordinate labels
-            ax.set_xlabel(None)
-            ax.set_ylabel(None)
-    
-            # Remove ticks and tick labels
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_xticklabels([])
-            ax.set_yticklabels([])
+            
+            # Set number of x- and y-ticks and gridlines
+            ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
+            ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=4))            
+            ax.grid()
 
     #%% Debug code om te bekijken welke maps er zijn en diverse andere eigeschappen
     if type_kaart == 'map' and debug == True:
