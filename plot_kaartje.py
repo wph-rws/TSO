@@ -83,7 +83,7 @@ def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', 
         image_dir.mkdir(parents=True, exist_ok=True)
 
         # Specify a path for the map image file        
-        map_image_path_png = image_dir / f'/{location.lower()}_map.png'        
+        map_image_path_png = image_dir / f'{location.lower()}_map.png'        
         map_image_path_tiff = image_dir / f'{location.lower()}_reprojected.tif'
     
         # geef limiet op voor leeftijd plaatje, als ouder: opnieuw ophalen
