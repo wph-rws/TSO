@@ -1,0 +1,106 @@
+# tso_parameters.yaml
+
+DATUM:
+  description: "jjjjmmdd"
+  format: "%8s"
+  unit: ""
+TIJD:
+  description: "uumm"
+  format: "%6s"
+  unit: ""
+X:
+  description: "coordinaat"
+  format: "%8d"
+  unit: ""
+Y:
+  description: "coordinaat"
+  format: "%8d"
+  unit: ""
+SENSHTE:
+  description: "Diepte set"
+  format: "%7.2f"
+  unit: "m"
+ECHOS:
+  description: "Echoset"
+  format: "%7.2f"
+  unit: "mtrs"
+Echms:
+  description: "Echoset"
+  format: "%7.2f"
+  unit: "mtrs"
+Echo:
+  description: "Echoschip"
+  format: "%7.2f"
+  unit: "M"
+EchoSh:
+  description: "Echoschip"
+  format: "%7.2f"
+  unit: "m"
+T:
+  description: "Temperatuur"
+  format: "%7.2f"
+  unit: "oC"
+Temp:
+  description: "Temperatuur"
+  format: "%7.2f"
+  unit: "oC"
+pH:
+  description: "Zuurgraad"
+  format: "%7.2f"
+  unit: "pH"
+O2:
+  description: "Zuurstof"
+  format: "%7.2f"
+  unit: "mg/l"
+'%O2':
+  description: "Zuurstof%"
+  format: "%6d"
+  unit: "%"
+GELBH:
+  description: "Geleidendheid"
+  format: "%7.2f"
+  unit: "mS/cm"
+SALNTT:
+  description: "Saliniteit"
+  format: "%7.2f"
+  unit: "dimsl"
+CL-:
+  description: "Chloride"
+  format: "%7d"
+  unit: "mg/l"
+MEX:
+  description: "MEX"
+  format: "%7d"
+  unit: "%"
+FLME:
+  description: "Flur ME"
+  format: "%7.2f"
+  unit: "ugr/l"
+Hy2:
+  description: "HydrolabIII O2"
+  format: "%7.2f"
+  unit: "mg/l"
+CHFLYSI:
+  description: "Chlorofyl"
+  format: "%7.2f"
+  unit: "ugr/l"
+TURBID:
+  description: "Troebelheid"
+  format: "%7.2f"
+  unit: "NTU"
+GEL20:
+  description: "Gel20"
+  format: "%6d"
+  unit: "???"
+TROEBFN:
+  description: "Troebelheid"
+  format: "%7.2f"
+  unit: "FNU"
+CHLFRFU:
+  description: "Chlorofyl"
+  format: "%7.2f"
+  unit: "RFU"
+PHYCOUG:
+  description: "Phycocyanine"
+  format: "%7.2f"
+  unit: "ug/l"
