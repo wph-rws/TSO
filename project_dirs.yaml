@@ -1,0 +1,6 @@
+# project_dirs.yaml
+
+output_dir: output/
+images_dir: images/
+data_dir: data/
+individual_files_dir: individual_files/

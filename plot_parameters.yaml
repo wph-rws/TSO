@@ -1,0 +1,77 @@
+# plot_parameters.yaml
+
+common:
+  oxy_min: 0
+  oxy_max: 14
+  oxy_colorstep: 1
+  oxy_colorstep_factor: 1
+
+  temp_min: 2
+  temp_max: 26
+  temp_colorstep: 1
+  temp_colorstep_factor: 2
+
+  ph_min: 7
+  ph_max: 9
+  ph_colorstep: 0.25
+  ph_colorstep_factor: 1
+
+locations:
+  anka:
+    rotation_angle: -90
+    sal_min: 0
+    sal_max: 5
+    sal_colorstep: 0.2
+    sal_colorstep_factor: 5
+
+  grev:
+    rotation_angle: 22
+    sal_min: 12
+    sal_max: 18.5
+    sal_colorstep: 0.5
+    sal_colorstep_factor: 2
+
+  grno:
+    rotation_angle: 22
+    sal_min: 12
+    sal_max: 18.5
+    sal_colorstep: 0.5
+    sal_colorstep_factor: 2
+
+  kvgt:
+    rotation_angle: -90
+    sal_min: 0
+    sal_max: 15
+    sal_colorstep: 1
+    sal_colorstep_factor: 1
+
+  veer:
+    rotation_angle: 10
+    sal_min: 9
+    sal_max: 17.5
+    sal_colorstep: 0.5
+    sal_colorstep_factor: 2
+
+  volk:
+    rotation_angle: 0
+    sal_min: 0.1
+    sal_max: 1.1
+    sal_colorstep: 0.1
+    sal_colorstep_factor: 2
+    additional_parameters: 
+      - turbidity
+    turbid_min: 0
+    turbid_max: 10
+    turbid_colorstep: 1
+    turbid_colorstep_factor: 1
+    ph_max: 10
+    oxy_max: 15
+
+  zoom:
+    rotation_angle: -90
+    sal_min: 0
+    sal_max: 2.6
+    sal_colorstep: 0.2
+    sal_colorstep_factor: 1
+    ph_max: 10
+    oxy_max: 15
