@@ -1,7 +1,8 @@
 **TSO Water Quality Processing**
 
 This codebase has been built to handle the processing of water quality measurements for Rijkswaterstaat Zee en Delta. These measurements, called TSO-measurements, focus on the three most important parameters in the dataset: Temperature, Salinity, and Oxygen.
-Project Background
+
+**Project Background**
 
 The history of these measurements dates back to the late 1970s. Traditionally, data processing was performed at a local branch of Rijkswaterstaat in Zeeland using a Fortran library. Over more than thirty years, this Fortran code has accumulated a lot of legacy code and technical debt, making it hard to maintain or modify.
 
