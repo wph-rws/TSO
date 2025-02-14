@@ -410,8 +410,38 @@ def plot_map_tso(mpnaam, ax, plot_manager):
 
 #%% Class PlotManager
 
+    """
+    A class to manage the creation and saving of environmental measurement plots,
+    including both single measurement plots and multi-measurement overview plots.
+
+    Parameters
+    ----------
+    location : str
+        Identifier or code for the location. This value is used to load location-specific
+        settings and data (e.g., map parameters, measurement limits) from external YAML files
+        and data sources.
+    measurement_date : str, optional
+        Specifies the measurement date for which data should be read. The default value 'latest'
+        instructs the system to select the most recent measurement. This parameter is primarily
+        used in 'single' plot mode.
+    plot_mode : {'single', 'multiple'}, optional
+        Determines the plotting mode:
+            - 'single': Creates a single plot using one measurement date with 4 axes (data parameters
+              plus an overview map).
+            - 'multiple': Creates a series of plots (one for each parameter) spanning multiple measurement
+              dates (using 7 axes, with the last axis dedicated to a map).
+        The default mode is 'single'.
+    parameters_multiple : list of str, optional
+        A list of parameter names to plot when using the 'multiple' mode. If not provided, it defaults
+        to plotting the following parameters: ['salinity', 'temperature', 'oxygen', 'ph']. In some
+        cases, additional parameters may be appended based on location-specific settings.
+    multiple_offset : int, optional
+        An offset value applied to the date range iteration in 'multiple' mode. This parameter allows
+        shifting the sequence of measurement dates by a specified number (default is 0).
+    """
+
 class PlotManager:
-    def __init__(self, location, measurement_date='latest', plot_mode='single', parameters_multiple=None):
+    def __init__(self, location, measurement_date='latest', plot_mode='single', parameters_multiple=None, multiple_offset=0):
         
         # Load common and location-specific parameters from YAML
         with open('plot_parameters.yaml', 'r') as f:
@@ -450,7 +480,7 @@ class PlotManager:
             
         elif plot_mode == 'multiple':
             self.n_axis = 7  # 6+1 axis, last one for map
-            self.date_range = list(np.arange(-self.n_axis + 1, 0))
+            self.date_range = list(np.arange(-self.n_axis + 1, 0) - multiple_offset)
             self.iter_dates = iter(self.date_range)   
             self.suptitle_fontsize = 13
             self.label_fontsize = 7
@@ -623,9 +653,13 @@ class PlotManager:
             
 #%%
             
-def process_plots(location, measurement_date='latest', plot_mode='single', parameters_multiple=None):
+def process_plots(location, measurement_date='latest', plot_mode='single', parameters_multiple=None, multiple_offset=0):
     
-    plot_manager = PlotManager(location, measurement_date=measurement_date, plot_mode=plot_mode, parameters_multiple=parameters_multiple)
+    plot_manager = PlotManager(location, 
+                               measurement_date=measurement_date, 
+                               plot_mode=plot_mode, 
+                               parameters_multiple=parameters_multiple, 
+                               multiple_offset=multiple_offset)
     
     if plot_manager.plot_mode == 'single':
         plot_manager.plot_salinity()
