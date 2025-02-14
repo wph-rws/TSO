@@ -22,7 +22,8 @@ https://waterberichtgeving.rws.nl/owb/regio/regio-zeeuwse-wateren/zeeland-meting
 **Running the Scripts**
 
 The scripts can be executed from the command line. However, you might need to comment or uncomment certain parts of the code for specific tasks. For a more interactive experience, consider using an IDE like Spyder or creating Jupyter notebooks.
-Setting Up the Conda Environment
+
+**Setting Up the Conda Environment**
 
 This project uses Conda to manage its dependencies. All required packages (with their exact versions) are listed in the environment.yaml file.
 
