@@ -18,6 +18,9 @@ The processed data is published on the official website:
 
 https://waterberichtgeving.rws.nl/owb/regio/regio-zeeuwse-wateren/zeeland-metingen/zeeland-metingen-tso
 
+The source data and the processed data can also be downloaded here:
+
+https://waterinfo-extra.rws.nl/projecten/@290359/tso-metingen-zeeland/
 
 **Running the Scripts**
 
