@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 710">
+  <!-- Background -->
+  <rect width="900" height="700" fill="#f9f9f9"/>
+  
+  <!-- Title -->
+  <text x="450" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">TSO Water Quality Processing System</text>
+  <text x="450" y="70" font-family="Arial" font-size="16" text-anchor="middle" font-style="italic">Temperature, Salinity, Oxygen Measurement Processing</text>
+  
+  <!-- Data Flow Arrow -->
+  <path d="M100,120 H800" stroke="#999" stroke-width="2" stroke-dasharray="5,5"/>
+  <path d="M790,120 l-10,-5 v10 z" fill="#999"/>
+  
+  <!-- Data Flow Steps -->
+  <rect x="100" y="100" width="120" height="40" rx="5" fill="#e1f5fe" stroke="#01579b"/>
+  <text x="160" y="125" font-family="Arial" font-size="12" text-anchor="middle">Raw Field Data</text>
+  
+  <rect x="260" y="100" width="120" height="40" rx="5" fill="#e1f5fe" stroke="#01579b"/>
+  <text x="320" y="125" font-family="Arial" font-size="12" text-anchor="middle">Rename Files</text>
+  
+  <rect x="420" y="100" width="120" height="40" rx="5" fill="#e1f5fe" stroke="#01579b"/>
+  <text x="480" y="125" font-family="Arial" font-size="12" text-anchor="middle">Process Data</text>
+  
+  <rect x="580" y="100" width="120" height="40" rx="5" fill="#e1f5fe" stroke="#01579b"/>
+  <text x="640" y="125" font-family="Arial" font-size="12" text-anchor="middle">Create Data Files</text>
+  
+  <rect x="740" y="100" width="120" height="40" rx="5" fill="#e1f5fe" stroke="#01579b"/>
+  <text x="800" y="125" font-family="Arial" font-size="12" text-anchor="middle">Visualization</text>
+  
+  <!-- Configuration Files Section -->
+  <rect x="50" y="180" width="200" height="160" rx="10" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2"/>
+  <text x="150" y="205" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Configuration Files</text>
+  
+  <rect x="70" y="220" width="160" height="30" rx="5" fill="#e1bee7" stroke="#8e24aa"/>
+  <text x="150" y="240" font-family="Arial" font-size="12" text-anchor="middle">locaties.yaml</text>
+  
+  <rect x="70" y="260" width="160" height="30" rx="5" fill="#e1bee7" stroke="#8e24aa"/>
+  <text x="150" y="280" font-family="Arial" font-size="12" text-anchor="middle">tso_parameters.yaml</text>
+  
+  <rect x="70" y="300" width="160" height="30" rx="5" fill="#e1bee7" stroke="#8e24aa"/>
+  <text x="150" y="320" font-family="Arial" font-size="12" text-anchor="middle">project_dirs.yaml</text>
+  
+  <!-- Core Functions Section -->
+  <rect x="280" y="180" width="300" height="160" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="430" y="205" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Core Processing Functions</text>
+  
+  <rect x="300" y="220" width="260" height="30" rx="5" fill="#c8e6c9" stroke="#388e3c"/>
+  <text x="430" y="240" font-family="Arial" font-size="12" text-anchor="middle">tso_functions.py</text>
+  
+  <rect x="300" y="260" width="260" height="30" rx="5" fill="#c8e6c9" stroke="#388e3c"/>
+  <text x="430" y="280" font-family="Arial" font-size="12" text-anchor="middle">read_individual_files.py</text>
+  
+  <rect x="300" y="300" width="260" height="30" rx="5" fill="#c8e6c9" stroke="#388e3c"/>
+  <text x="430" y="320" font-family="Arial" font-size="12" text-anchor="middle">read_datafile.py</text>
+  
+  <!-- Visualization Section -->
+  <rect x="610" y="180" width="240" height="160" rx="10" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="730" y="205" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Visualization</text>
+  
+  <rect x="630" y="220" width="200" height="30" rx="5" fill="#ffe0b2" stroke="#f57c00"/>
+  <text x="730" y="240" font-family="Arial" font-size="12" text-anchor="middle">plot_measurement.py</text>
+  
+  <rect x="630" y="260" width="200" height="30" rx="5" fill="#ffe0b2" stroke="#f57c00"/>
+  <text x="730" y="280" font-family="Arial" font-size="12" text-anchor="middle">plot_kaartje.py</text>
+  
+  <rect x="630" y="300" width="200" height="30" rx="5" fill="#ffe0b2" stroke="#f57c00"/>
+  <text x="730" y="320" font-family="Arial" font-size="12" text-anchor="middle">PlotManager class</text>
+  
+  <!-- Entry Point Scripts -->
+  <rect x="50" y="370" width="800" height="120" rx="10" fill="#ffebee" stroke="#b71c1c" stroke-width="2"/>
+  <text x="450" y="395" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Entry Point Scripts</text>
+  
+  <rect x="70" y="410" width="180" height="30" rx="5" fill="#ffcdd2" stroke="#c62828"/>
+  <text x="160" y="430" font-family="Arial" font-size="12" text-anchor="middle">rename_raw_tso_files.py</text>
+  
+  <rect x="270" y="410" width="180" height="30" rx="5" fill="#ffcdd2" stroke="#c62828"/>
+  <text x="360" y="430" font-family="Arial" font-size="12" text-anchor="middle">create_datafile.py</text>
+  
+  <rect x="470" y="410" width="180" height="30" rx="5" fill="#ffcdd2" stroke="#c62828"/>
+  <text x="560" y="430" font-family="Arial" font-size="12" text-anchor="middle">process_locations.py</text>
+  
+  <rect x="670" y="410" width="180" height="30" rx="5" fill="#ffcdd2" stroke="#c62828"/>
+  <text x="760" y="430" font-family="Arial" font-size="12" text-anchor="middle">plot_tso_*.py</text>
+  
+  <rect x="70" y="450" width="375" height="30" rx="5" fill="#ffcdd2" stroke="#c62828"/>
+  <text x="260" y="470" font-family="Arial" font-size="12" text-anchor="middle">Data preparation and file standardization</text>
+  
+  <rect x="470" y="450" width="375" height="30" rx="5" fill="#ffcdd2" stroke="#c62828"/>
+  <text x="660" y="470" font-family="Arial" font-size="12" text-anchor="middle">Data visualization and report generation</text>
+  
+  <!-- Data and Parameters -->
+  <rect x="50" y="520" width="800" height="170" rx="10" fill="#e3f2fd" stroke="#0d47a1" stroke-width="2"/>
+  <text x="450" y="545" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Water Quality Parameters and Locations</text>
+  
+  <!-- Parameters -->
+  <rect x="70" y="560" width="240" height="110" rx="5" fill="#bbdefb" stroke="#1976d2"/>
+  <text x="190" y="580" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Parameters</text>
+  <text x="190" y="605" font-family="Arial" font-size="12" text-anchor="middle">Temperature (°C)</text>
+  <text x="190" y="625" font-family="Arial" font-size="12" text-anchor="middle">Salinity / Chloride (mg/l)</text>
+  <text x="190" y="645" font-family="Arial" font-size="12" text-anchor="middle">Oxygen (mg/l)</text>
+  <text x="190" y="665" font-family="Arial" font-size="12" text-anchor="middle">pH, Turbidity, Chlorofyl, etc.</text>
+  
+  <!-- Locations -->
+  <rect x="330" y="560" width="240" height="110" rx="5" fill="#bbdefb" stroke="#1976d2"/>
+  <text x="450" y="580" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Locations</text>
+  <text x="450" y="605" font-family="Arial" font-size="12" text-anchor="middle">Grevelingen (grev, grno)</text>
+  <text x="450" y="625" font-family="Arial" font-size="12" text-anchor="middle">Volkerak-Zoommeer (volk, zoom)</text>
+  <text x="450" y="645" font-family="Arial" font-size="12" text-anchor="middle">Veerse Meer (veer)</text>
+  <text x="450" y="665" font-family="Arial" font-size="12" text-anchor="middle">Kanaal Gent-Terneuzen (kvgt)</text>
+  
+  <!-- Output -->
+  <rect x="590" y="560" width="240" height="110" rx="5" fill="#bbdefb" stroke="#1976d2"/>
+  <text x="710" y="580" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Output Formats</text>
+  <text x="710" y="605" font-family="Arial" font-size="12" text-anchor="middle">Standardized Data Files</text>
+  <text x="710" y="625" font-family="Arial" font-size="12" text-anchor="middle">Parameter Profile Plots</text>
+  <text x="710" y="645" font-family="Arial" font-size="12" text-anchor="middle">Location Maps</text>
+  <text x="710" y="665" font-family="Arial" font-size="12" text-anchor="middle">PDF Reports</text>
+  
+  <!-- Data Flow Arrows -->
+  <path d="M150,340 v20" stroke="#6a1b9a" stroke-width="2"/>
+  <path d="M150,360 h300" stroke="#6a1b9a" stroke-width="2"/>
+  <path d="M450,360 v10" stroke="#6a1b9a" stroke-width="2"/>
+  <path d="M450,370 l-5,-10 h10 z" fill="#6a1b9a"/>
+  
+  <path d="M430,340 v30" stroke="#2e7d32" stroke-width="2"/>
+  <path d="M430,370 l-5,-10 h10 z" fill="#2e7d32"/>
+  
+  <path d="M730,340 v20" stroke="#e65100" stroke-width="2"/>
+  <path d="M730,360 h-280" stroke="#e65100" stroke-width="2"/>
+  <path d="M450,360 v10" stroke="#e65100" stroke-width="2"/>
+  <path d="M450,370 l-5,-10 h10 z" fill="#e65100"/>
+  
+  <path d="M450,490 v20" stroke="#b71c1c" stroke-width="2"/>
+  <path d="M450,510 l-5,-10 h10 z" fill="#b71c1c"/>
+</svg>
