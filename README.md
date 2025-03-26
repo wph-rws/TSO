@@ -8,7 +8,7 @@ The history of these measurements dates back to the late 1970s. Traditionally, d
 
 To overcome these challenges, a Python version of the processing code was developed. The Python code:
 
--    Maintains compatibility, it uses the same structure of input files as the Fortran code, allowing generated datafiles to be used interchangeably, as long as no new parameters (like Phycocyanine) are introduced or units (such as the change for Turbidity from NTU to FNU) are altered.
+-    Maintains compatibility, it uses the same structure of input files as the Fortran code, allowing generated datafiles to be used interchangeably, as long as no new parameters (like Phycocyanine) are introduced or units are altered (such as the change for Turbidity from NTU to FNU).
 -    Provides enhanced visualization: When new parameters or unit changes occur, only the Python code can generate the required visualizations.
 -    Serves legacy functionality: The Fortran code remains available locally on Rijkswaterstaat servers, but it will not be published due to its reliance on local libraries, including proprietary (commercial) software, and the complexity of running it on other systems.
 
