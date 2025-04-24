@@ -1,0 +1,18 @@
+# VERTIKAAL 12 M.C.ECOS 8 VERTIKAAL
+* 03-04-2025 13:50:56
+#X: 74654 - Y: 384174
+#00 DONARLOCATIE: ZTS-39
+#01 MEETPUNT: 1
+#08 WAARNEMER(S): bernaaards
+@ par10.dat
+## TLU        oC <-->
+## LUCHTDK    hPa <1022>
+## WINDSHD    m/s <-->
+## WINDRTG    gradn <-->
+## BEWKGD     /8 <0>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH   GEL20  SALNTT     CL- CHLFRFU TROEBFN PHUCOUG
+  74654  384174 20250403 135101    1.08    4.96   11.07   8.61    1.52     187    1.07     497    4.58   13.97   11.30
+  74654  384174 20250403 135107    1.89    3.79   11.07   8.61    1.52     187    1.07     497    4.54   15.83   11.48
+  74654  384174 20250403 135109    2.91    2.66   11.07   8.61    1.52     187    1.07     497    4.38   17.41   11.54
+  74654  384174 20250403 135111    3.94    1.70   11.03   8.61    1.52     187    1.07     496    4.79   20.17   11.60

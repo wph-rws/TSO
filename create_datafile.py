@@ -1,8 +1,8 @@
 from tso_functions import generate_filelist, write_datafile
 
 """
-This script processes measurement data by generating a file list and then writing
-a corresponding data file for one or more measurement locations. Two main functions are used:
+This script processes measurement data by generating a filelist and then writing
+a corresponding datafile for one or more measurement locations. Two main functions are used:
     - generate_filelist
     - write_datafile
 
@@ -42,11 +42,11 @@ Script Structure:
 # locations = ['grev']
 # locations = ['grno']
 # locations = ['kvgt']
-# locations = ['veer']
+locations = ['veer']
 # locations = ['volk']
 # locations = ['zoom']
 
-locations = ['anka', 'volk', 'zoom']
+# locations = ['anka', 'volk', 'zoom']
 # locations = ['anka', 'kvgt', 'grev', 'grno', 'veer', 'volk', 'zoom']
 # measurement_date = '20240404'
 

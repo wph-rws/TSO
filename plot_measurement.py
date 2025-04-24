@@ -87,7 +87,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
     # If only 1 measurement with values, create small grid around values to display in graph
     if only_one_mp:
         
-        # Create new rows with distance -100 and +100
+        # Create new rows with distance -300 and +300
         df_above = filtered_df.copy()
         df_above['dist'] -= 300
         
@@ -110,7 +110,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
             
     else:
         
-        # Put data parameter in separate arrays
+        # Put data of parameter in separate arrays
         x = df['dist']
         y = df['diepte'] * -1
         z = df[description_parameter]         
@@ -127,11 +127,15 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
     x_filtered = x[mask]
     y_filtered = y[mask]
     z_filtered = z[mask]
-        
-    zi = griddata((x_filtered, y_filtered), z_filtered, (xi[None, :], yi[:, None]), method='linear')    
     
-    # Apply Gaussian smoothing (if more than 1 measurment points are available)
-    if apply_smoothing and not only_one_mp:
+    # If all data of parameter is NaN, create grid with NaN's, otherwise interpolated grid
+    if np.all(np.isnan(z_filtered)):
+        zi = np.full((ngridy, ngridx), np.nan)
+    else:        
+        zi = griddata((x_filtered, y_filtered), z_filtered, (xi[None, :], yi[:, None]), method='linear')    
+    
+    # Apply Gaussian smoothing (if more than 1 measurment points are available and not all data of parameter is NaN)
+    if apply_smoothing and not only_one_mp and not np.all(np.isnan(z)):
         
         # Determine the indices of columns that contain at least one non-NaN value
         valid_columns = np.where(np.any(~np.isnan(zi), axis=0))[0]

@@ -16,7 +16,7 @@ If plot_mode 'multiple' is used, the latest six measurements are used
 from plot_measurement import process_plots
 
 location = 'veer'
-process_plots(location, measurement_date = '20241017')
+process_plots(location)
 
 #%%
 
