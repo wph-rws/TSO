@@ -104,3 +104,7 @@ PHYCOUG:
   description: "Phycocyanine"
   format: "%7.2f"
   unit: "ug/l"
+PHUCOUG:
+  description: "Phycocyanine"   # added because of continuing errors in measurement equipment
+  format: "%7.2f"
+  unit: "ug/l"
