@@ -96,6 +96,10 @@ TROEBFN:
   description: "Troebelheid"
   format: "%7.2f"
   unit: "FNU"
+TROEBHFNU:
+  description: "Troebelheid"
+  format: "%7.2f"
+  unit: "FNU"
 CHLFRFU:
   description: "Chlorofyl"
   format: "%7.2f"

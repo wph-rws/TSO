@@ -1,0 +1,111 @@
+#
+#
+#  dit script copieren naar directory met F*.dat  files
+#  vervolgens datum invullen en dan draaien
+#
+#
+DATUM=20250501
+#
+#-------------------------------------------------------------------------------
+#
+#       traject volkerak
+#
+JAAR=`echo $DATUM | cut -c1-4` ; MAAND=`echo $DATUM | cut -c5-6` ;DAG=`echo $DATUM | cut -c7-8`
+
+
+
+rm -f naarmat.dat
+
+head -v F* | grep '-eF0' '-eX:' | paste - - | awk '{print $5,$8,$2}' > dezemeting
+
+#cat dezemeting
+cat /home/tow/project/tso/volk/traject/mpnaam | awk '{print $1,$2,$3,$4 }' > mpnaam   # dit om trailing spaties kwijt te raken
+
+KEER=0
+NDUM=0
+for MP in 15 16 13 12 11 10 9 7 4 1
+do
+KEER=`expr $KEER + 1`
+
+ cat mpnaam  | grep "-e $MP$" > mpnu
+
+ if test `wc mpnu |  awk '{print $1}' ` -gt 0
+ then
+ XP=`cat mpnu |  awk '{print $1}' `
+ YP=`cat mpnu |  awk '{print $2}' `
+ ZP=`cat mpnu |  awk '{print $3}' `
+
+ XD=`cat dezemeting | get_nearestpoint $XP $YP - ndec=0 |  awk '{print $4}' `
+ YD=`cat dezemeting | get_nearestpoint $XP $YP - ndec=0 |  awk '{print $5}' `
+ AF=`cat dezemeting | get_nearestpoint $XP $YP - ndec=0 |  awk '{print $3}' `
+
+
+   if test $AF -lt 200   # alleen punten binnen 200 meter meenemen
+   then
+
+    FILE=`cat dezemeting | grep $XD | awk '{print $3}' `
+    echo $FILE >> naarmat.dat
+
+     echo -e meetpunt $MP "\t" : XP=$XP YP=$YP op $XD $YD afstand=$AF m $FILE
+
+   else   # geen meting gevonden dan een fakefile maken
+
+#    echo meetpunt $MP "\t" : XP=$XP YP=$YP geen meting gevonden binnen 500 meter
+
+#
+#  fakefile maken als niet is gemeten
+#
+
+NDUM=`expr $NDUM + 1`
+
+echo '# meetpunt' $MP 'niet gemeten'                  > fake0$NDUM
+echo '*' $JAAR-$MAAND-$DAG 00:00:00                  >> fake0$NDUM
+echo '#X:' $XP - 'Y:' $YP                            >> fake0$NDUM
+
+if test $KEER -eq 1       # want eco2mat leest administratie uit kop van de eerste file
+then 
+EERSTEFILE=`ls F00*dat | head -n1`
+csplit -k -s -z $EERSTEFILE /#X/+1 /~/ {*}         # de administratie zit nu in file xx01
+cat xx01 >> fake0$NDUM
+fi
+
+
+echo                                                 >> fake0$NDUM
+echo '~   X    Y    DATUM    TIJD   SENSHTE  ' >> fake0$NDUM
+echo $XP  $YP $DATUM   235900    1.00          >> fake0$NDUM
+echo $XP  $YP $DATUM   235900    $ZP           >> fake0$NDUM
+
+echo fake0$NDUM   >> naarmat.dat
+
+echo meetunt $MP niet gemeten file fake0$NDUM gemaakt
+
+   fi
+
+ else  # meetpunt MP komt niet voor in mpnaam
+
+ echo meetpunt $MP "\t" : komt niet voor in file mpnaam
+
+ fi
+
+done
+
+eco2mat > vo$DATUM.lokaal
+
+TMPOLD=`cat vo$DATUM.lokaal | grep Temp`
+TMPNEW=`ls /home/tow/data/vert/volk/vo20* | tail -n1 | xargs grep Temp `
+
+echo 
+echo -e $TMPOLD "\t" vervangen door $TMPNEW
+
+
+cat vo$DATUM.lokaal | sed -e "s/$TMPOLD/$TMPNEW/"  > vo$DATUM
+
+echo
+echo resultaat naar file vo$DATUM
+
+
+
+#ln -s /home/tow/project/tso/volk/traject/volk_traject.inp volk_traject.inp
+#cat volk_traject.inp | sed "s/VERVANGFILE/SETVAR   :FILE=vo$DATUM/" | sed 's*VERVANGDIR*SETVAR   :DIR=./*' > temp.inp
+
+#map2009 lx11 temp.inp
