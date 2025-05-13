@@ -17,7 +17,9 @@ Usage details:
      from the directory with the datafiles for the given location.
    - To process a specific measurement date, you can:
        a) Provide the date as a string in the format 'YYYYMMDD', e.g.,
-              measurement_date = '20240404'
+              measurement_date = '20240404' to the function 'generate_filelist',
+              the function 'write_datafile' then uses the filelist of individual
+              files of the specified date
        b) Provide an integer indicating the measurement order:
               - Use -1 for the latest measurement,
               - Use -2 for the second to last, etc.
@@ -40,9 +42,9 @@ Script Structure:
 
 # locations = ['anka']
 # locations = ['grev']
-# locations = ['grno']
+locations = ['grno']
 # locations = ['kvgt']
-locations = ['veer']
+# locations = ['veer']
 # locations = ['volk']
 # locations = ['zoom']
 
@@ -53,7 +55,7 @@ locations = ['veer']
 #%%
 
 for location in locations:
-    filelist = generate_filelist(location)
+    filelist = generate_filelist(location, measurement_date='20250425')
     write_datafile(location, filelist)
 
 #%%
