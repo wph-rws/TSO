@@ -42,9 +42,9 @@ Script Structure:
 
 # locations = ['anka']
 # locations = ['grev']
-locations = ['grno']
+# locations = ['grno']
 # locations = ['kvgt']
-# locations = ['veer']
+locations = ['veer']
 # locations = ['volk']
 # locations = ['zoom']
 
@@ -55,7 +55,7 @@ locations = ['grno']
 #%%
 
 for location in locations:
-    filelist = generate_filelist(location, measurement_date='20250425')
+    filelist = generate_filelist(location)
     write_datafile(location, filelist)
 
 #%%
