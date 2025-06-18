@@ -60,6 +60,10 @@ GELBH:
   description: "Geleidendheid"
   format: "%7.2f"
   unit: "mS/cm"
+GELDHD:
+  description: "Geleidendheid"
+  format: "%7.2f"
+  unit: "???"
 SALNTT:
   description: "Saliniteit"
   format: "%7.2f"
@@ -104,6 +108,10 @@ CHLFRFU:
   description: "Chlorofyl"
   format: "%7.2f"
   unit: "RFU"
+CHLPHL:
+  description: "Chlorofyl"
+  format: "%7.2f"
+  unit: "???"
 PHYCOUG:
   description: "Phycocyanine"
   format: "%7.2f"
@@ -112,3 +120,7 @@ PHUCOUG:
   description: "Phycocyanine"   # added because of continuing errors in measurement equipment
   format: "%7.2f"
   unit: "ug/l"
+DICHT:
+  description: "Dichtheid"
+  format: "%7.2f"
+  unit: "g/l"
