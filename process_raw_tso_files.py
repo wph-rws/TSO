@@ -3,7 +3,8 @@ import os
 import pandas as pd
 import pathlib
 import shutil
-from tso_functions import get_location_info, load_project_dirs
+
+from tso_functions import get_location_info, load_project_dirs, determine_filetype
 
 # Load directories
 project_dirs = load_project_dirs()
@@ -24,8 +25,44 @@ def get_subdirs(dirname):
                .reset_index(drop=True)
     return output
 
+def clean_filenames(dirname, donar_code):
+    
+    for f in dirname.iterdir():    
+        
+        if f.is_file():        
+            if donar_code in f.name.lower():
+                splitted_fn = f.name.lower().split('-')
+                
+                # Filename is in correct format, e.g: GTS-20_20250626.csv or 1148734_GTS-20_20250626.csv
+                if len(splitted_fn) > 1:
+                    new_name = donar_code.upper() + '-' + splitted_fn[1]
+                    
+                # Filename is in incorrect format, e.g: gts21.csv 
+                elif len(splitted_fn) == 1:
+                    
+                    # Get file number from filename, without extension
+                    loc_num = splitted_fn[0].lower().split('.')[0].replace(donar_code, '')
+                    
+                    # Read headers and first row of data to get date
+                    first_row = pd.read_csv(f, nrows=1, sep=';')
+                    mdate = pd.to_datetime(first_row.iloc[0]['DATUM'], format='%Y%m%d')     
+                    
+                    # Make new filename, e.g.: GTS-20_20250626.csv
+                    new_name = donar_code.upper() + '-' + loc_num + '_' + mdate.strftime('%Y%m%d') + '.csv'
+                    
+                f.rename(f.with_name(new_name))  
+   
+            else:
+                if 'steen' in f.name.lower():
+                    new_name = f.name.replace('STEEN', f'{donar_code.upper()}-10')  
+                    new_name = donar_code.upper() + new_name.lower().split(donar_code, 1)[1]
+                    f.rename(f.with_name(new_name))
+            
+            print(f'File renamed {f.name}  →  {new_name}')
+
 # i_dir is the position of the subdir in the list of subdirs
-def rename_data_files(tso_subdirs, dirname, i_dir):
+def rename_data_files(tso_subdirs, dirname, filetype, i_dir):
+    
     path = dirname / 'F*.dat'
     files = glob.glob(str(path))
     
@@ -112,6 +149,8 @@ def rename_data_files(tso_subdirs, dirname, i_dir):
         new_filename = file_n.replace('nF', 'F')
         new_filename_path = pathlib.Path(new_filename)
         os.rename(file_n, new_filename_path)  
+        
+# %%
 
 def change_naarmat_file(tso_dir, tso_last_dir, naarmat_filenames, new_date):
     for naarmat_filename in naarmat_filenames:
@@ -133,26 +172,37 @@ def change_naarmat_file(tso_dir, tso_last_dir, naarmat_filenames, new_date):
                     
         with open(destination, 'w', newline='') as f:
             f.writelines(raw_text)
-            print(f'\n{old_date} replaced by {new_date} in {naarmat_filename}')            
-       
+            print(f'\n{old_date} replaced by {new_date} in {naarmat_filename}')           
+
+# %%
+      
 def proces_individual_files(location, date='latest'):
     
     # Location data same for all locations in VZM
     if location == 'vzm':
-        _, _, location_data = get_location_info('anka')
+        _, _, location_data, donar_code = get_location_info('anka')
         tso_locations = ['anka', 'volk', 'zoom']
     else:
-        location_code, location_name, location_data = get_location_info(location)
+        location_code, location_name, location_data, donar_code = get_location_info(location)
         tso_locations = [location]
     
     tso_dir = indiv_files_dir / location_data                
     tso_subdirs = get_subdirs(tso_dir)
     
-    # maak een lijst met alle subdirs in hoofddir van locatie en gebruik de meest recente
+    # Make list with all subdirs in main dir of location and use the most recent subdir
     tso_last_dir = tso_subdirs['Locatie'].iloc[-1]
     
-    rename_data_files(tso_subdirs, tso_last_dir, -1)
+    # Determine filetype (dat or csv)
+    filetype = determine_filetype(tso_last_dir)
     
-    new_date = tso_subdirs['Datum'].iloc[-1]
-    naarmat_filename = [f'_Naarmat{location}' for location in tso_locations]
-    change_naarmat_file(tso_dir, tso_last_dir, naarmat_filename, new_date)
+    # Only rename files if filetype is .dat, .csv already has location in its name 
+    if filetype == 'dat':    
+        rename_data_files(tso_subdirs, tso_last_dir, -1)
+        
+        # Creation of naarmat-file only for *.dat files, *.csv will not work
+        new_date = tso_subdirs['Datum'].iloc[-1]
+        naarmat_filename = [f'_Naarmat{location}' for location in tso_locations]
+        change_naarmat_file(tso_dir, tso_last_dir, naarmat_filename, new_date)
+        
+    elif filetype == 'csv':
+        clean_filenames(tso_last_dir, donar_code)

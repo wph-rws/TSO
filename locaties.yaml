@@ -3,6 +3,7 @@ locations:
     location_name: Antwerps Kanaalpand
     location_code: ak
     location_data: vzm
+    donar_code: zts
     xll: 73750
     yll: 371000
     dx: 6500
@@ -11,6 +12,7 @@ locations:
     location_name: Grevelingen
     location_code: gr
     location_data: grev
+    donar_code: gts
     xll: 41000
     yll: 404500
     dx: 36000
@@ -19,6 +21,7 @@ locations:
     location_name: Grevelingen Noord
     location_code: gn
     location_data: grev
+    donar_code: gts
     xll: 41000
     yll: 407000
     dx: 36000
@@ -27,6 +30,7 @@ locations:
     location_name: Kanaal Gent-Terneuzen
     location_code: kg
     location_data: kvgt
+    donar_code: kts
     xll: 37000
     yll: 344000
     dx: 12000
@@ -35,6 +39,7 @@ locations:
     location_name: Veerse Meer
     location_code: vm
     location_data: veer
+    donar_code: vts
     xll: 29000
     yll: 390000
     dx: 24000
@@ -43,6 +48,7 @@ locations:
     location_name: Volkerak
     location_code: vo
     location_data: vzm
+    donar_code: zts
     xll: 69000
     yll: 405000
     dx: 20000
@@ -51,6 +57,7 @@ locations:
     location_name: Zoommeer
     location_code: zo
     location_data: vzm
+    donar_code: zts
     xll: 70000
     yll: 383500
     dx: 5500

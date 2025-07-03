@@ -43,12 +43,13 @@ Script Structure:
 # locations = ['anka']
 # locations = ['grev']
 # locations = ['grno']
-# locations = ['kvgt']
+locations = ['kvgt']
 # locations = ['veer']
 # locations = ['volk']
 # locations = ['zoom']
 
-locations = ['anka', 'volk', 'zoom']
+# locations = ['anka', 'volk', 'zoom']
+# locations = ['grev', 'grno']
 # locations = ['anka', 'kvgt', 'grev', 'grno', 'veer', 'volk', 'zoom']
 # measurement_date = '20240404'
 
