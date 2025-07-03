@@ -2,20 +2,14 @@ import numpy as np
 import pandas as pd
 import collections
 from io import StringIO 
-from tso_functions import MPNaam, find_filename_datafile, get_location_info
+from tso_functions import MPNaam, find_filename_datafile
 
 #%% Read data file of measurement
 
-def read_datafile(location, measurement_date='latest', ignored_points = {}, plot_mode='single'):    
-    
-    # Get location info
-    _, _, location_data = get_location_info(location)
+def read_datafile(location, measurement_date='latest', ignored_points={}, plot_mode='single'):    
    
     # Find filename
     filename = find_filename_datafile(location, measurement_date, plot_mode)
-    
-    # if plot_mode == 'multiple' and '_03' in filename:
-    #     filename = find_filename_datafile(location, measurement_date-1)
     
     # Read file mpnaam
     mpnaam = MPNaam(location)

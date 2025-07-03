@@ -317,7 +317,7 @@ def transform_points(x, y, origin_x, origin_y, angle_degrees):
                                         [0, 1, origin_y],
                                         [0, 0, 1]])
     
-    # Combine the transformations (order from right to left)
+    # Combine the transformations (matrix multiplication, order from right to left)
     transformation_matrix = translation_matrix_back @ rotation_matrix @ translation_matrix_to_origin
     
     # Apply the transformation to each point

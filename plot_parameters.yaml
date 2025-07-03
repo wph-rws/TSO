@@ -13,16 +13,16 @@ common:
 
   ph_min: 7
   ph_max: 9
-  ph_colorstep: 0.25
+  ph_colorstep: 0.2
   ph_colorstep_factor: 1
 
 locations:
   anka:
     rotation_angle: -90
     sal_min: 0
-    sal_max: 5
-    sal_colorstep: 0.2
-    sal_colorstep_factor: 5
+    sal_max: 8
+    sal_colorstep: 0.5
+    sal_colorstep_factor: 2
 
   grev:
     rotation_angle: 22

@@ -105,8 +105,11 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         ngridx = 150
         ngridy = 100
         
-        xi = np.linspace(0, np.max(x), ngridx)
-        yi = np.linspace(np.min(y), np.max(y), ngridy)
+        # Set minimum depth at maximum of 0 and the minimum of the sensor height
+        ymin = np.max([0, np.min(y)])
+        
+        xi = np.linspace(0, np.max(x), ngridx)       
+        yi = np.linspace(ymin, np.max(y), ngridy)
             
     else:
         
@@ -117,6 +120,9 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         
         ngridx = 900
         ngridy = 600
+        
+        # Set minimum depth at maximum of 0 and the minimum of the sensor height
+        ymin = np.max([0, np.min(y)])
         
         xi = np.linspace(0, np.max(x), ngridx)
         yi = np.linspace(np.min(y), np.max(y), ngridy)
@@ -455,7 +461,7 @@ class PlotManager:
         project_dirs = load_project_dirs()
         self.output_dir = pathlib.Path(project_dirs.get('output_dir'))
 
-        self.location_code, self.location_name, self.location_data = get_location_info(location)
+        self.location_code, self.location_name, self.location_data, self.donar_code = get_location_info(location)
         self.location = location  
         self.plot_mode = plot_mode
 
