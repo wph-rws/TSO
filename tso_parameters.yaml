@@ -62,7 +62,7 @@ GELBH:
   unit: "mS/cm"
 GELDHD:
   description: "Geleidendheid"
-  format: "%7.2f"
+  format: "%7.0f"
   unit: "???"
 SALNTT:
   description: "Saliniteit"
