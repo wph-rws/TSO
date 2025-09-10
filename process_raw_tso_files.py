@@ -61,7 +61,7 @@ def clean_filenames(dirname, donar_code):
             print(f'File renamed {f.name}  →  {new_name}')
 
 # i_dir is the position of the subdir in the list of subdirs
-def rename_data_files(tso_subdirs, dirname, filetype, i_dir):
+def rename_data_files(tso_subdirs, dirname, i_dir):
     
     path = dirname / 'F*.dat'
     files = glob.glob(str(path))

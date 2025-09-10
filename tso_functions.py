@@ -491,11 +491,16 @@ def print_measurement_info(measurement_info):
     return measurement_info_header
 
 # Function to print the header of the output file
-def print_description_header(parameters, descriptions, units):
+def print_description_header(parameters, descriptions, units, add_chloride=False):
 
     description_header = ''
     for parameter, description, unit in zip(parameters, descriptions, units):
         description_header += f'>{parameter:10s} {description:20s} {unit:8s}\n'
+    
+    # Add chloride to header if chloride is calculted based on salinity
+    if add_chloride == True:
+        description_header += '>CL-        Chloride             mg/l'
+        
     return description_header
     
 #%%
@@ -793,14 +798,22 @@ def create_individual_dataframes(location, filelist, filetype, mpnaam, missing_l
                 df = pd.read_csv(filename, sep='\\s+', skiprows=loc_empty_line[fn_short]+2, header=None, na_values='--')
                 df.columns = header_rows[fn_short]
                 
+                # Sensor height must be positive, but input files can vary
+                # with all negative or all positive values, so set to absolute
+                df['SENSHTE'] = df['SENSHTE'].abs()
+                
+                # Adjust units sensor height and (x,y)-coördinates
+                if df['SENSHTE'].max() > 100:                    
+                    df['SENSHTE'] = df['SENSHTE'] / 100    
+                
             elif filetype == 'csv':
                 
                 # Get sample of file to determine decimal separator
                 sample = Path(filename).read_text(errors='ignore')[:1024]
                 
                 # Count occurences
-                comma = sample.count(",")
-                dot   = sample.count(".")
+                comma = sample.count(',')
+                dot   = sample.count('.')
                 dec = ',' if comma > dot else '.'
                 
                 df = pd.read_csv(filename, decimal=dec, sep=';')
@@ -821,7 +834,12 @@ def create_individual_dataframes(location, filelist, filetype, mpnaam, missing_l
                     position = df.columns.get_loc('LUCHTDK')
                     temp_df = df[df.columns[position+1:]]
                     rows_all_nan = temp_df.isna().all(axis=1)
-                    df = df.loc[~rows_all_nan].drop(columns='LUCHTDK').reset_index(drop=True)  
+                    df = df.loc[~rows_all_nan].drop(columns='LUCHTDK').reset_index(drop=True)
+            
+            # Add column with chloride data if salinity is present but chloride is not
+            if 'SALNTT' in df.columns and not 'CL-' in df.columns:
+                df = add_chloride_mg_per_l(df)
+                print(f'{filename} - Added column with chloride data, based on salinity')
                 
             # Set NaN to 9999
             df = df.fillna(9999)           
@@ -858,6 +876,73 @@ def create_individual_dataframes(location, filelist, filetype, mpnaam, missing_l
         raise ValueError(f'No individual files found for "{location.upper()}", no file has been generated')
     
     return df_dict, df_dict_missing
+
+# %% Functions to calculate chloride based on salinity if chloride not present
+
+def seawater_density_kg_m3(S, T):
+    
+    """Seawater density at p≈0 dbar according to EOS-80 (kg/m^3).
+    Inputs:
+      S: Practical salinity in PSU (numerically ~ g/kg).
+      T: Temperature in degrees Celsius.
+    """
+    
+    # Density of pure water as a function of T (kg/m^3)
+    rho_w = (999.842594
+             + 6.793952e-2 * T
+             - 9.095290e-3 * T**2
+             + 1.001685e-4 * T**3
+             - 1.120083e-6 * T**4
+             + 6.536332e-9 * T**5)
+
+    # Temperature-dependent coefficients for saline contribution
+    # Linear in S.
+    A = (0.824493
+         - 4.0899e-3 * T
+         + 7.6438e-5 * T**2
+         - 8.2467e-7 * T**3
+         + 5.3875e-9 * T**4)
+
+    # S^(3/2) term (nonlinear mixing effect).
+    B = (-5.72466e-3
+         + 1.0227e-4 * T
+         - 1.6546e-6 * T**2)
+
+    # S^2 term (small correction, temperature-independent)
+    C = 4.8314e-4
+
+    # Total density
+    out_col = rho_w + A * S + B * (S ** 1.5) + C * (S ** 2)    
+    
+    return out_col
+
+def add_chloride_mg_per_l(df, temperature_col='Temp', sal_col='SALNTT', out_col='CL-', chloride_fraction=0.553):
+    
+    """
+    Add chloride (mg/L) to the DataFrame based on temperature (T) and salinity (S).
+
+    Parameters:
+      df: Pandas DataFrame.
+      temp_col: Column name with T in degrees Celsius.
+      sal_col: Column name with S in PSU (~ g/kg).
+      out_col: Output column name.
+      chloride_fraction: Mass fraction of chloride in total dissolved salts.
+
+    Method:
+      rho = Seawater density (kg/m^3).
+      Total salts (mg/L) = S (g/kg) * rho (kg/m^3) -> g/m^3 = mg/L.
+      Chloride (mg/L) = chloride_fraction * S * rho.
+    """
+    
+    S = df[sal_col]
+    T = df[temperature_col]
+    
+    rho = seawater_density_kg_m3(S, T)  # kg/m^3
+
+    cl_mg_l = chloride_fraction * S * rho  # mg/L
+    df[out_col] = np.round(cl_mg_l)
+    
+    return df
 
 #%% Write to file
 
@@ -936,7 +1021,7 @@ def write_datafile(location, filelist, measurement_date='latest'):
             columns_with_only_na = [index for index, col in enumerate(output_data.columns) if (output_data[col] == 9999).all()]
             
             if columns_with_only_na:
-                formats = update_format_missing_parameters(formats, columns_with_only_na)                   
+                formats = update_format_missing_parameters(formats, columns_with_only_na)     
                 
             output_data = output_data.to_numpy()
             

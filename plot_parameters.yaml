@@ -48,7 +48,7 @@ locations:
   veer:
     rotation_angle: 10
     sal_min: 9
-    sal_max: 17.5
+    sal_max: 18.5
     sal_colorstep: 0.5
     sal_colorstep_factor: 2
 
