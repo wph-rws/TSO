@@ -1,0 +1,73 @@
+#
+#
+#  dit script copieren naar directory met F*.dat  files
+#  vervolgens datum invullen en dan draaien
+#
+#
+DATUM=20250911
+#
+#-------------------------------------------------------------------------------
+#
+#       traject kanaal Gent Terneuzen (werkt goed als alle punten zijn gemeten)
+#
+rm -f naarmat.dat 
+
+head F* | grep '-eF0' '-eX:' | paste - - | awk '{print $5,$8,$2}'  > dezemeting
+
+
+cat /home/tow/project/tso/kvgt/traject/mpnaam | awk '{print $1,$2,$3,$4 }'  > mpnaam   # dit om trailing spaties kwijt te raken
+
+
+for MP in 1 2 3 4 5 6 7 8 9 10 11     #  procedure om files  F..dat   in juiste volgorde in file naarmat.dat te zetten
+do
+cat mpnaam  | grep "-e $MP$" > mpnu
+XP=`cat mpnu | awk '{print $1}' `             # Xwaarde geplande meetpunt
+YP=`cat mpnu | awk '{print $2}' `             # Ywaarde geplande meetpunt
+
+XD=`cat dezemeting | get_nearestpoint $XP $YP ndec=0 | awk '{print $4}' `    # Xwaarde meting
+YD=`cat dezemeting | get_nearestpoint $XP $YP ndec=0 | awk '{print $5}' `    # Ywaarde meting
+AF=`cat dezemeting | get_nearestpoint $XP $YP ndec=0 | awk '{print $3}' `    # afstand tot geplande meetpunt
+
+FILE=`cat dezemeting | grep $XD | grep $YD |  awk '{print $3}' `             # file met meetwaarden van de betreffende meting
+echo $FILE >> naarmat.dat
+
+echo meetpunt $MP : XP=$XP YP=$YP op $XD $YD afstand=$AF m file $FILE
+
+done
+
+
+eco2mat > kg$DATUM.lokaal                 #  meetwaarden van deze meting in een file zetten
+
+
+######################################################################################3
+#
+# hierna worden regels met Temp en CL- nog aangevuld met gegevens van de vorige meting
+# (dit zijn specificaties om te tekene met map2009)
+#
+
+TMPOLD=`cat kg$DATUM.lokaal | grep Temp`
+TMPNEW=`ls /home/tow/data/vert/kvgt/kg20* | tail -n1 | xargs grep Temp `
+
+CHLOLD=`cat kg$DATUM.lokaal | grep CL- `
+CHLNEW=`ls /home/tow/data/vert/kvgt/kg20* | tail -n1 | xargs grep CL- `
+
+echo 
+echo TMPOLD=$TMPOLD
+echo TMPNEW=$TMPNEW
+echo
+echo CHLOLD=$CHLOLD
+echo CHLNEW=$CHLNEW
+
+cat kg$DATUM.lokaal | sed -e "s/$TMPOLD/$TMPNEW/" -e "s*$CHLOLD*$CHLNEW*" > kg$DATUM
+
+echo
+echo resultaat naar file  kg$DATUM
+
+#ln -s /home/tow/project/tso/kvgt/traject/kvgt_traject.inp kvgt_traject.inp
+#cat kvgt_traject.inp | sed "s/VERVANGFILE/SETVAR   :FILE=kg$DATUM/" | sed 's*VERVANGDIR*SETVAR   :DIR=./*' > temp.inp
+
+#map2009 lx11 temp.inp
+
+
+
+
