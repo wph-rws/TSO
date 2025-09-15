@@ -67,6 +67,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         graph_parameter = '$O_2$'
     elif parameter.lower() == 'ph':
         graph_parameter_and_unit = 'Zuurgraad'
+        clabel_fmt = '%1.1f'
         
     # Filter dataframe on 'notna' to determine if it is only 1 measurement point    
     # Check if the description_parameter column exists    
