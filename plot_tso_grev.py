@@ -18,9 +18,9 @@ However, you can adjust this by using the 'multiple_offset' parameter to select 
 from plot_measurement import process_plots
 
 location = 'grev'
-process_plots(location)
+process_plots(location, measurement_date='20250901')
 
 #%%
 
 location = 'grev'
-process_plots(location, plot_mode='multiple')
+# process_plots(location, plot_mode='multiple')

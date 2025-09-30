@@ -173,7 +173,7 @@ def find_filename_datafile(location, measurement_date='latest', plot_mode='singl
     # Match the string against the meting_id column 
     else:      
         try:                       
-            location_code, _ , _ = get_location_info(location)
+            location_code, _ , _ , _ = get_location_info(location)
             filename_datafile = filelist_datafiles['Meting'][filelist_datafiles['Meting_id'] == f'{location_code}{measurement_date}']
             
             # Check the number of matches
@@ -690,7 +690,7 @@ def read_individual_files(location, filelist, filetype):
                     measurement_info['beheerder'].append((line.split(':')[-1]).strip())          
     
                 # Find location of first empy line
-                if line in ['\n', '\r\n']:
+                if line.strip() == '':
                     loc_empty_line[fn_short] = num
     
                     # First character is a ~ which messes up column names

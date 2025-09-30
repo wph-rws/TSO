@@ -41,9 +41,9 @@ Script Structure:
 #%%
 
 # locations = ['anka']
-# locations = ['grev']
+locations = ['grev']
 # locations = ['grno']
-locations = ['kvgt']
+# locations = ['kvgt']
 # locations = ['veer']
 # locations = ['volk']
 # locations = ['zoom']
@@ -56,8 +56,8 @@ locations = ['kvgt']
 #%%
 
 for location in locations:
-    filelist = generate_filelist(location)
-    write_datafile(location, filelist)
+    filelist = generate_filelist(location, -3)
+    write_datafile(location, filelist, -3)
 
 #%%
 
