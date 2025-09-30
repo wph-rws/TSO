@@ -18,7 +18,7 @@ However, you can adjust this by using the 'multiple_offset' parameter to select 
 from plot_measurement import process_plots
 
 location = 'veer'
-# process_plots(location)
+process_plots(location)
 
 #%%
 

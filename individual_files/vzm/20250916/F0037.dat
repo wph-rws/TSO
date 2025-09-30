@@ -1,0 +1,21 @@
+# VERTIKAAL 1 Milieucontainer
+* 16-09-2025 15:26:02
+#X: 74476 - Y: 386088
+#06 PROJECTCODE: ZTS/ATS
+#00 DONARLOCATIE: ZTS-37
+#08 WAARNEMER(S): bernaards
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: zts-15
+#23 EINDPUNT: zts-38
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+## LUCHTDK    hPa <1017>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74477  386086 20250916 152838    1.04    5.67   17.31   8.37    1.60     170    0.96     438    1.55      12.97      0.45
+  74477  386086 20250916 152847    2.01    4.54   17.32   8.38    1.61     170    0.96     439    1.21      13.17      0.41
+  74477  386086 20250916 152854    3.08    3.38   17.32   8.38    1.61     170    0.96     439    1.24      12.81      0.46
+  74477  386086 20250916 152859    4.00    2.54   17.32   8.38    1.61     170    0.96     439    1.12      13.72      0.30
+  74477  386086 20250916 152905    4.98    1.53   17.31   8.38    1.60     170    0.96     438    1.14      13.00      0.15
+  74477  386086 20250916 152912    6.07    0.55   17.31   8.38    1.60     170    0.96     438    1.15      13.07      0.33

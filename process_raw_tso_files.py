@@ -1,8 +1,10 @@
 import glob
 import os
-import pandas as pd
 import pathlib
 import shutil
+
+import numpy as np
+import pandas as pd
 
 from tso_functions import get_location_info, load_project_dirs, determine_filetype
 
@@ -176,7 +178,7 @@ def change_naarmat_file(tso_dir, tso_last_dir, naarmat_filenames, new_date):
 
 # %%
       
-def proces_individual_files(location, date='latest'):
+def proces_individual_files(location, measurement_date='latest'):
     
     # Location data same for all locations in VZM
     if location == 'vzm':
@@ -189,20 +191,42 @@ def proces_individual_files(location, date='latest'):
     tso_dir = indiv_files_dir / location_data                
     tso_subdirs = get_subdirs(tso_dir)
     
-    # Make list with all subdirs in main dir of location and use the most recent subdir
-    tso_last_dir = tso_subdirs['Locatie'].iloc[-1]
+    # Make list with all subdirs in main dir of location and use the selected subdir    
+    if isinstance(measurement_date, str) and measurement_date.lower() == 'latest':
+        i_dir = -1 
+    elif isinstance(measurement_date, (int, np.integer)) and measurement_date < 10000:
+        i_dir = measurement_date
+    else:
+        try:                       
+            matching_dir = tso_subdirs[tso_subdirs['Datum'] == measurement_date]
+            
+            # Check the number of matches
+            num_matches = len(matching_dir)            
+            
+            if num_matches == 0:
+                raise ValueError(f'No matches found for "{measurement_date}"')
+            elif num_matches > 1:
+                raise ValueError(f'Multiple matches found for "{measurement_date}"')
+                
+            i_dir = tso_subdirs.iloc[matching_dir.index].index[0]
+    
+        except ValueError as e:
+            print(e)
+            return None        
+        
+    tso_selected_dir = tso_subdirs['Locatie'].iloc[i_dir]
     
     # Determine filetype (dat or csv)
-    filetype = determine_filetype(tso_last_dir)
+    filetype = determine_filetype(tso_selected_dir)
     
     # Only rename files if filetype is .dat, .csv already has location in its name 
     if filetype == 'dat':    
-        rename_data_files(tso_subdirs, tso_last_dir, -1)
+        rename_data_files(tso_subdirs, tso_selected_dir, i_dir)
         
         # Creation of naarmat-file only for *.dat files, *.csv will not work
         new_date = tso_subdirs['Datum'].iloc[-1]
         naarmat_filename = [f'_Naarmat{location}' for location in tso_locations]
-        change_naarmat_file(tso_dir, tso_last_dir, naarmat_filename, new_date)
+        change_naarmat_file(tso_dir, tso_selected_dir, naarmat_filename, new_date)
         
     elif filetype == 'csv':
-        clean_filenames(tso_last_dir, donar_code)
+        clean_filenames(tso_selected_dir, donar_code)
