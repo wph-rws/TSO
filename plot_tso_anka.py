@@ -18,7 +18,8 @@ However, you can adjust this by using the 'multiple_offset' parameter to select 
 from plot_measurement import process_plots
 
 location = 'anka'
-process_plots(location)
+
+process_plots(location, measurement_date='20241114')
 
 #%%
 
