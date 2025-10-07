@@ -104,13 +104,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         z = df_one_mp[description_parameter]
         
         ngridx = 150
-        ngridy = 100
-        
-        # Set minimum depth at maximum of 0 and the minimum of the sensor height
-        ymin = np.max([0, np.min(y)])
-        
-        xi = np.linspace(0, np.max(x), ngridx)       
-        yi = np.linspace(ymin, np.max(y), ngridy)
+        ngridy = 100       
             
     else:
         
@@ -122,11 +116,11 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         ngridx = 900
         ngridy = 600
         
-        # Set minimum depth at maximum of 0 and the minimum of the sensor height
-        ymin = np.max([0, np.min(y)])
-        
-        xi = np.linspace(0, np.max(x), ngridx)
-        yi = np.linspace(np.min(y), np.max(y), ngridy)
+    # Set minimum depth at maximum of 0 and the maximum of the sensor height
+    ymax = np.max([0, np.max(y)])
+    
+    xi = np.linspace(0, np.max(x), ngridx)
+    yi = np.linspace(ymax, np.min(y), ngridy)
     
     # Filter out NaNs from the input data, otherwise blank regions in interpolation
     z = np.array(z)
@@ -139,7 +133,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
     if np.all(np.isnan(z_filtered)):
         zi = np.full((ngridy, ngridx), np.nan)
     else:        
-        zi = griddata((x_filtered, y_filtered), z_filtered, (xi[None, :], yi[:, None]), method='linear')    
+        zi = griddata((x_filtered, y_filtered), z_filtered, (xi[None, :], yi[:, None]), method='linear')
     
     # Apply Gaussian smoothing (if more than 1 measurment points are available and not all data of parameter is NaN)
     if apply_smoothing and not only_one_mp and not np.all(np.isnan(z)):
@@ -203,6 +197,11 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         
         x_filtered = df_scatter['x']
         y_filtered = df_scatter['y']     
+        
+        # Fill one measurment to minimum depth
+        zi = (pd.DataFrame(zi)
+              .bfill(axis=0)
+              .values)       
         
     # Format title of subplot
     title = f'{graph_parameter}     {graph_parameter_and_unit}          {measurement_date}'
