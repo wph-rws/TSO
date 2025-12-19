@@ -570,7 +570,7 @@ def read_individual_files(location, filelist, filetype):
     width_df = []
     header_rows = {}
     dt_measurements = {}
-    loc_empty_line = {}
+    loc_colnames_line = {}
     measurement_date = 0
 
     # Define measurment info
@@ -619,7 +619,7 @@ def read_individual_files(location, filelist, filetype):
         measurement_info['startpunt'] = dt_locs.idxmin()
         measurement_info['eindpunt'] = dt_locs.idxmax()
             
-        return measurement_info, header_rows, loc_empty_line
+        return measurement_info, header_rows, loc_colnames_line
         
     # Read all individual dat-files
     for i, filename in enumerate(filelist['filename']):
@@ -689,12 +689,16 @@ def read_individual_files(location, filelist, filetype):
                 if '#52 beheerder' in line:
                     measurement_info['beheerder'].append((line.split(':')[-1]).strip())          
     
-                # Find location of first empy line
-                if line.strip() == '':
-                    loc_empty_line[fn_short] = num
+                # Find location of column names
+                required_columns = {'datum', 'tijd', 'x', 'y'}
+                parts = set(line.split())
+                
+                if required_columns.issubset(parts):
+
+                    loc_colnames_line[fn_short] = num
     
                     # First character is a ~ which messes up column names
-                    header_row = raw_text[loc_empty_line[fn_short]+1].split()[1:]
+                    header_row = raw_text[loc_colnames_line[fn_short]].replace('~', '').split()
     
                     # Replace 'T' with 'Temp'
                     header_row = ['Temp' if item == 'T' else item for item in header_row]
@@ -717,11 +721,11 @@ def read_individual_files(location, filelist, filetype):
         if item not in  ('loc_names', 'meetdatum') and measurement_info[item]:
             measurement_info[item] = pd.DataFrame(measurement_info[item]).value_counts().index[0]            
     
-    return measurement_info, header_rows, loc_empty_line
+    return measurement_info, header_rows, loc_colnames_line
 
 # %%
 
-def create_individual_dataframes(location, filelist, filetype, mpnaam, missing_locs, header_rows, loc_empty_line):
+def create_individual_dataframes(location, filelist, filetype, mpnaam, missing_locs, header_rows, loc_colnames_line):
 
     # Allocate dictionaries
     df_dict = {}
@@ -795,7 +799,7 @@ def create_individual_dataframes(location, filelist, filetype, mpnaam, missing_l
            
             # Read files into dataframe
             if filetype == 'dat':    
-                df = pd.read_csv(filename, sep='\\s+', skiprows=loc_empty_line[fn_short]+2, header=None, na_values='--')
+                df = pd.read_csv(filename, sep='\\s+', skiprows=loc_colnames_line[fn_short]+1, header=None, na_values='--')
                 df.columns = header_rows[fn_short]
                 
                 # Sensor height must be positive, but input files can vary
@@ -957,13 +961,13 @@ def write_datafile(location, filelist, measurement_date='latest'):
     filetype = determine_filetype(dirname)
     
     # Read individual datafiles
-    measurement_info, header_rows, loc_empty_line = read_individual_files(location, filelist, filetype)   
+    measurement_info, header_rows, loc_colnames_line = read_individual_files(location, filelist, filetype)   
     
     # Update filelist with missing locations
     filelist_with_missing_locs, missing_locs = update_filelist_with_missing_locs(location, filelist, mpnaam, measurement_info) 
 
     # Create dataframes for all individual locations
-    df_dict, df_dict_missing = create_individual_dataframes(location, filelist_with_missing_locs, filetype, mpnaam, missing_locs, header_rows, loc_empty_line)
+    df_dict, df_dict_missing = create_individual_dataframes(location, filelist_with_missing_locs, filetype, mpnaam, missing_locs, header_rows, loc_colnames_line)
     
     # Load parameters from YAML-file
     parameters = load_tso_parameters()

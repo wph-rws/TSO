@@ -74,7 +74,7 @@ def rename_data_files(tso_subdirs, dirname, i_dir):
     new_filenames = []
     for file in files:
         
-        print('\nInlezen ' + file)
+        print('\nRead ' + file)
         
         donar_found = 0
         

@@ -19,7 +19,7 @@ from plot_measurement import process_plots
 
 location = 'anka'
 
-process_plots(location, measurement_date='20241114')
+process_plots(location)
 
 #%%
 
