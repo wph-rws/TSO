@@ -4,7 +4,7 @@ create a new data file using 'create_datafile.py'.
 
 If the function is called without a specified measurement date, the latest available
 measurement date will be used. To select a specific measurement date, you have two options:
-    - Specify the date as a string in 'YYYYMMDD' format, for example: measurement_date = '20240601'.
+    - Specify the datyye as a string in 'YYYYMMDD' format, for example: measurement_date = '20240601'.
     - Specify an integer, where:
         - -1 corresponds to the latest measurement date,
         - -2 corresponds to the second latest measurement date, and so on. For example: measurement_date = -5.

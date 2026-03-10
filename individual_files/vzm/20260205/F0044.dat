@@ -1,0 +1,20 @@
+# VERTIKAAL 1 Milieucontainer
+* 05-02-2026 14:04:49
+#X: 78759 - Y: 376584
+#06 PROJECTCODE: ZTS/ATS vertikalen
+#00 DONARLOCATIE: ZTS-44
+#08 WAARNEMER(S): bernaards
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: zts9
+#23 EINDPUNT: zts46
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  78759  376584 20260205 140450    0.99    5.16   12.15   8.11    8.89    1061    6.75    3756    0.37       8.53      0.07
+  78759  376584 20260205 140504    2.09    5.08   12.06   8.11    8.88    1062    6.76    3759    0.31       8.86      0.00
+  78759  376584 20260205 140507    3.00    4.36   12.03   8.11    8.88    1062    6.76    3760    0.32       9.16      0.06
+  78759  376584 20260205 140511    4.00    2.83   12.02   8.11    8.87    1062    6.76    3761    0.40       9.54      0.05
+  78759  376584 20260205 140515    5.04    2.00   11.98   8.11    8.87    1063    6.76    3763    0.36       9.50      0.20
+  78759  376584 20260205 140519    5.92    0.89   11.91   8.11    8.86    1063    6.77    3765    0.39       9.13      0.02
