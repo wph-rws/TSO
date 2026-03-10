@@ -152,7 +152,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
               .bfill(axis=0)
               .ffill(axis=1)
               .bfill(axis=1)
-              .values)
+              .values.copy())
         
         # Apply Gaussian smoothing to the interpolated grid.
         # Gaussian smoothing replaces each grid value with a weighted average of its neighbors.
@@ -201,7 +201,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         # Fill one measurment to minimum depth
         zi = (pd.DataFrame(zi)
               .bfill(axis=0)
-              .values)       
+              .values.copy())
         
     # Format title of subplot
     title = f'{graph_parameter}     {graph_parameter_and_unit}          {measurement_date}'

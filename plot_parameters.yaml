@@ -6,7 +6,7 @@ common:
   oxy_colorstep: 1
   oxy_colorstep_factor: 1
 
-  temp_min: 2
+  temp_min: 0
   temp_max: 26
   temp_colorstep: 1
   temp_colorstep_factor: 2
