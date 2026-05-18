@@ -1,0 +1,11 @@
+# VERTIKAAL 9 Milieucontainer
+* 13-05-2026 10:23:02
+#X: 50778 - Y: 419776
+#00 DONARLOCATIE: GTS-21
+#08 WAARNEMER(S): bernaards
+@ par1.dat
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   O2     %O2   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  50779  419776 20260513 102313    1.05    5.23   13.98   8.20 7.61      91   37.90    4332   31.28   17721    0.74       0.68      0.30
+  50779  419776 20260513 102326    2.02    3.55   13.97   8.20 7.61      91   37.89    4333   31.28   17722    1.13       0.57      0.16
+  50779  419776 20260513 102345    3.04    1.73   13.96   8.20 7.58      90   37.89    4333   31.29   17723    0.95       0.55      0.38
