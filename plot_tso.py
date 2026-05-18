@@ -19,9 +19,9 @@ from plot_measurement import process_plots
 
 # location = 'anka'
 # location = 'grev'
-# location = 'grno'
+location = 'grno'
 # location = 'kvgt'
-location = 'veer'
+# location = 'veer'
 # location = 'volk'
 # location = 'zoom'
 

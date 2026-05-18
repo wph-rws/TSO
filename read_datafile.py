@@ -1,12 +1,56 @@
 import numpy as np
 import pandas as pd
 import collections
-from io import StringIO 
-from tso_functions import MPNaam, find_filename_datafile
+from io import StringIO
+from pathlib import Path
+from tso_functions import (
+    MPNaam,
+    find_filename_datafile,
+    generate_filelist,
+    update_filelist_with_missing_locs,
+)
 
 #%% Read data file of measurement
 
-def read_datafile(location, measurement_date='latest', ignored_points={}, plot_mode='single'):    
+def _build_source_file_lookup(location, measurement_date, mpnaam):
+    try:
+        filelist = generate_filelist(location, measurement_date)
+        filelist_with_missing_locs, missing_locs = update_filelist_with_missing_locs(
+            location,
+            filelist,
+            mpnaam,
+            measurement_info={},
+        )
+
+        location_order_df = pd.DataFrame({
+            'loc_num': mpnaam.location_order[location].astype(int),
+            'order': range(len(mpnaam.location_order[location])),
+        })
+        location_order_df = location_order_df.set_index('loc_num')
+
+        filelist_with_missing_locs = filelist_with_missing_locs.merge(
+            location_order_df,
+            on='loc_num',
+            how='left',
+        )
+        filelist_with_missing_locs = filelist_with_missing_locs.sort_values('order').reset_index(drop=True)
+    except Exception:
+        return {}
+
+    source_files = {}
+    for meetpunt, row in enumerate(filelist_with_missing_locs.itertuples(index=False), start=1):
+        filename = getattr(row, 'filename')
+        fn_short = getattr(row, 'fn_short')
+        loc_num = str(getattr(row, 'loc_num'))
+
+        if loc_num in missing_locs or pd.isna(filename):
+            source_files[meetpunt] = f'missing source file: {fn_short}'
+        else:
+            source_files[meetpunt] = Path(filename).as_posix()
+
+    return source_files
+
+def read_datafile(location, measurement_date='latest', ignored_points={}, plot_mode='single'):
    
     # Find filename
     filename = find_filename_datafile(location, measurement_date, plot_mode)
@@ -247,18 +291,25 @@ def read_datafile(location, measurement_date='latest', ignored_points={}, plot_m
         # which means same coordinates for two or more points in datafile
         counts = df.groupby('berekend_meetpunt')['meetpunt'].nunique()
         problematic = counts[counts > 1]
-        
+
         if not problematic.empty:
-            error_message = "Error: The following 'berekend_meetpunt' values have multiple 'meetpunt' values:"
+            source_files = _build_source_file_lookup(location, meetdatum[-1], mpnaam)
+            error_tables = []
+
             for problem_points in problematic.index:
                 sub_df = df[df['berekend_meetpunt'] == problem_points]
                 problem_points_coords = sub_df.groupby('meetpunt')[['berekend_meetpunt', 'tijd', 'x-coord', 'y-coord']].first()
-                   
-                error_message = "Error: The following 'berekend_meetpunt' values have multiple 'meetpunt' values:\n"
-                error_message += problem_points_coords.to_string()
-                
-                print(error_message)               
-                raise ValueError("Data contains conflicting 'meetpunt' values for the same 'berekend_meetpunt'.")
+                problem_points_coords['bronbestand'] = [
+                    source_files.get(int(meetpunt), 'onbekend')
+                    for meetpunt in problem_points_coords.index
+                ]
+                error_tables.append(problem_points_coords.to_string())
+
+            error_message = (
+                "Error: The following 'berekend_meetpunt' values have multiple 'meetpunt' values:\n"
+                + "\n\n".join(error_tables)
+            )
+            raise ValueError(error_message)
         
         # Find missing loc_names, convert to sets for efficient comparison
         berekend_meetpunt_set = set(df['berekend_meetpunt'].astype(str))

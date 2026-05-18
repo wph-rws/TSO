@@ -1,0 +1,20 @@
+# VERTIKAAL 1 Milieucontainer
+* 29-04-2026 07:54:34
+#X: 74656 - Y: 384193
+#06 PROJECTCODE: ZTS ATS
+#00 DONARLOCATIE: ZTS-39
+#08 WAARNEMER(S): Bernaards
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: wisskke
+#23 EINDPUNT: zijpe
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+## LUCHTDK    hPa <1022>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74656  384192 20260429 75439    1.02      --   14.82   8.53    0.50      57    0.31      87    5.22       9.34      0.64
+  74656  384192 20260429 75449    1.94      --   14.81   8.53    0.51      57    0.31      89    4.68      11.64      0.48
+  74656  384192 20260429 75454    3.01      --   14.82   8.53    0.73      82    0.45     152    4.51      12.88      0.53
+  74656  384192 20260429 75459    3.91      --   14.82   8.53    0.74      83    0.46     156    5.17      12.11      0.49
+  74656  384192 20260429 75507    5.06      --   14.83   8.52    0.80      90    0.50     175    4.91      29.04      0.63

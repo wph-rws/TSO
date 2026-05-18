@@ -1,0 +1,21 @@
+# VERTIKAAL 1 Milieucontainer
+* 02-04-2026 10:09:53
+#X: 74530 - Y: 385426
+#06 PROJECTCODE: ZTS-ATS
+#00 DONARLOCATIE: ZTS-37
+#08 WAARNEMER(S): bernaards
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: krammer
+#23 EINDPUNT: krtammer
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+## LUCHTDK    hPa <1017>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74530  385426 20260402 101012     0.90      --    9.88   8.48    0.74      94    0.52     186    1.10       5.87      0.29
+  74530  385426 20260402 101029     2.07      --    9.88   8.48    0.74      94    0.52     186    0.98       5.05      0.32
+  74530  385426 20260402 101057     3.05      --    9.88   8.43    0.74      93    0.52     185    0.98       4.28      0.29
+  74530  385426 20260402 101105     4.02      --    9.88   8.43    0.74      94    0.52     186    1.09       3.51      0.28
+  74530  385426 20260402 101126     5.09      --    9.87   8.42    0.74      93    0.52     185    0.91       2.77      0.27
+  74530  385426 20260402 101140     5.95      --    9.87   8.42    0.74      94    0.52     186    0.94       2.64      0.31
