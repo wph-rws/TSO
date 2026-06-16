@@ -37,12 +37,6 @@ from owslib.wms import WebMapService
 
 from tso_functions import load_project_dirs
 
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 """
 Functie voor het plotten van het kaartje in de hoek van de profielen.
    - gebiedscode is RW/RO/SW/SO/HW/HO/RP of een van de TSO-trajecten
@@ -57,7 +51,6 @@ cs_etrs = 'EPSG:25831' # ETRS89 / UTM zone 31N (EPSG:25831)
 
 # cs_etrs = cs_rd
 
-@profile
 def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', force_refresh_image=False, debug=False, rotation_angle=0, map_cache=None):
  
     type_kaarten = ('map', 'feature')
@@ -230,7 +223,7 @@ def get_new_map(location, bbox, layer, coord_system, output_format, transparent,
     if location in ('anka', 'kvgt'):            
                     
         # Transformeer coördinaten
-        transformer = Transformer.from_crs(cs_rd, cs_etrs)
+        transformer = Transformer.from_crs(cs_rd, cs_etrs, always_xy=True)
         bbox = transformer.transform_bounds(*bbox)
         
         img = wms.getmap(layers=[layer],
@@ -279,7 +272,6 @@ def get_new_map(location, bbox, layer, coord_system, output_format, transparent,
 
     return img  
     
-@profile
 def get_location_data_for_map(location):
     
     # Load data from YAML file
@@ -349,16 +341,25 @@ def transform_points(x, y, origin_x, origin_y, angle_degrees):
     
     return x_final, y_final
 
-@profile
 def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox, map_cache=None):
+    # Keep the requested RD extent as the plotting extent. For border locations the
+    # WMS request is made in ETRS, whose axis-aligned bounds are larger because RD
+    # and ETRS are locally rotated relative to each other.
+    plot_bbox = bbox.copy()
+    image_bbox = bbox.copy()
    
     # Coördinaten transformeren naar Europees coördinatenstelsel, anders
     # sluiten kaarten niet goed op elkaar aan
     if location in ('anka', 'kvgt'):        
         
         # RD New (EPSG:28992) to ETRS89 / UTM zone 31N (EPSG:25831)
-        transformer_rd_to_etrs = Transformer.from_crs(cs_rd, cs_etrs)
-        bbox = transformer_rd_to_etrs.transform_bounds(*bbox)          
+        transformer_rd_to_etrs = Transformer.from_crs(cs_rd, cs_etrs, always_xy=True)
+        bbox = transformer_rd_to_etrs.transform_bounds(*bbox)
+
+        # Keep the enlarged RD bounds for raster placement after reprojection. The
+        # final visible crop still uses plot_bbox below.
+        transformer_etrs_to_rd = Transformer.from_crs(cs_etrs, cs_rd, always_xy=True)
+        image_bbox = transformer_etrs_to_rd.transform_bounds(*bbox)
 
     # Calculate dx, dy and the coordinates of the other corners
     xll = bbox[0]
@@ -437,53 +438,85 @@ def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox, map
         if map_cache is not None:
             map_cache[rot_key] = (rotated_rgba_tr, transform_of_image, bounds)
 
-    if location in ('anka', 'kvgt'):       
-        
-        # ETRS89 / UTM zone 31N (EPSG:25831) to RD New (EPSG:28992)
-        transformer_etrs_to_rd = Transformer.from_crs(cs_etrs, cs_rd)
-        bbox = transformer_etrs_to_rd.transform_bounds(*bbox)            
+    def _rotated_polygon_for_bbox(source_bbox):
+        xll = source_bbox[0]
+        yll = source_bbox[1]
+        dx = source_bbox[2] - source_bbox[0]
+        dy = source_bbox[3] - source_bbox[1]
+        xur, yur = xll + dx, yll + dy
+        origin_x, origin_y = xll + dx/2, yll + dy/2
 
-        # Calculate dx, dy and the coordinates of the other corners
-        xll = bbox[0]
-        yll = bbox[1]
-        dx = bbox[2] - bbox[0]
-        dy = bbox[3] - bbox[1]
-        xur, yur = xll + dx, yll + dy   
-        
-    # Define the desired origin for rotation
-    origin_x, origin_y = xll + dx/2, yll + dy/2  # Center of the polygon
-    
-    # Create the polygon from these coordinates
-    polygon = Polygon([(xll, yll), (xur, yll), (xur, yur), (xll, yur), (xll, yll)])    
-    
-    # Translate the polygon to the origin, Rotate the polygon around the origin,
-    # translate the rotated polygon back to the original position
-    polygon_at_origin = translate(polygon, -origin_x, -origin_y)
-    rotated_polygon_at_origin = shapely_rotate(polygon_at_origin, rotation_angle, origin=(0, 0))
-    rotated_polygon = translate(rotated_polygon_at_origin, origin_x, origin_y)   
-    
-    # Calculate offsets
-    x_off = (xll - rotated_polygon.bounds[0]) / transform_of_image[0]
-    y_off = (yll - rotated_polygon.bounds[1]) / transform_of_image[4]
-        
-    # Combine transformation of image with translation by rotation    
-    combi_transform = transform_of_image * Affine.translation(-x_off, y_off)   
-    
-    x_poly, y_poly = rotated_polygon.exterior.xy
-            
-    xx_poly = x_poly.tolist()
-    yy_poly = y_poly.tolist()    
-    
-    if rotation_angle == -90:        
-        # Switch x and y
-        ylims = [xx_poly[3], xx_poly[1]]
-        xlims = [yy_poly[0], yy_poly[2]] 
-    elif rotation_angle > 0:
-        xlims = [xx_poly[0], xx_poly[2]]
-        ylims = [yy_poly[1], yy_poly[3]]
-    elif rotation_angle < 0:
-        xlims = [xx_poly[3], xx_poly[1]]
-        ylims = [yy_poly[0], yy_poly[2]]
+        polygon = Polygon([(xll, yll), (xur, yll), (xur, yur), (xll, yur), (xll, yll)])
+        polygon_at_origin = translate(polygon, -origin_x, -origin_y)
+        rotated_polygon_at_origin = shapely_rotate(polygon_at_origin, rotation_angle, origin=(0, 0))
+        return translate(rotated_polygon_at_origin, origin_x, origin_y)
+
+    def _limits_for_polygon(rotated_polygon):
+        x_poly, y_poly = rotated_polygon.exterior.xy
+        xx_poly = x_poly.tolist()
+        yy_poly = y_poly.tolist()
+
+        if rotation_angle == -90:
+            # Switch x and y
+            ylims = [xx_poly[3], xx_poly[1]]
+            xlims = [yy_poly[0], yy_poly[2]]
+        elif rotation_angle > 0:
+            xlims = [xx_poly[0], xx_poly[2]]
+            ylims = [yy_poly[1], yy_poly[3]]
+        elif rotation_angle < 0:
+            xlims = [xx_poly[3], xx_poly[1]]
+            ylims = [yy_poly[0], yy_poly[2]]
+
+        return xlims, ylims
+
+    def _clip_limit_to_coverage(lim, coverage):
+        lim_min, lim_max = min(lim), max(lim)
+        cov_min, cov_max = min(coverage), max(coverage)
+        clipped_min = max(lim_min, cov_min)
+        clipped_max = min(lim_max, cov_max)
+        if clipped_min > clipped_max:
+            raise ValueError('Map crop does not overlap available map coverage')
+        if lim[0] > lim[1]:
+            return [clipped_max, clipped_min]
+        return [clipped_min, clipped_max]
+
+    def _limits_inside(inner_xlim, inner_ylim, outer_xlim, outer_ylim, tolerance=1e-6):
+        return (
+            min(inner_xlim) >= min(outer_xlim) - tolerance
+            and max(inner_xlim) <= max(outer_xlim) + tolerance
+            and min(inner_ylim) >= min(outer_ylim) - tolerance
+            and max(inner_ylim) <= max(outer_ylim) + tolerance
+        )
+
+    image_polygon = _rotated_polygon_for_bbox(image_bbox)
+    plot_polygon = _rotated_polygon_for_bbox(plot_bbox)
+
+    # Calculate offsets from the enlarged image bbox. The final crop is calculated
+    # separately from plot_bbox, so the route remains aligned without manual margins.
+    x_off = (image_bbox[0] - image_polygon.bounds[0]) / transform_of_image[0]
+    y_off = (image_bbox[1] - image_polygon.bounds[1]) / transform_of_image[4]
+
+    # Combine transformation of image with translation by rotation
+    combi_transform = transform_of_image * Affine.translation(-x_off, y_off)
+
+    xlims, ylims = _limits_for_polygon(plot_polygon)
+    image_xlims, image_ylims = _limits_for_polygon(image_polygon)
+
+    if location in ('anka', 'kvgt'):
+        if np.abs(rotation_angle) == 90:
+            crop_xlim, crop_ylim = ylims, xlims
+            coverage_xlim, coverage_ylim = image_ylims, image_xlims
+        else:
+            crop_xlim, crop_ylim = xlims, ylims
+            coverage_xlim, coverage_ylim = image_xlims, image_ylims
+
+        if not _limits_inside(crop_xlim, crop_ylim, coverage_xlim, coverage_ylim):
+            crop_xlim = _clip_limit_to_coverage(crop_xlim, coverage_xlim)
+            crop_ylim = _clip_limit_to_coverage(crop_ylim, coverage_ylim)
+            if np.abs(rotation_angle) == 90:
+                ylims, xlims = crop_xlim, crop_ylim
+            else:
+                xlims, ylims = crop_xlim, crop_ylim
     
     show(rotated_rgba_tr, extent=[bounds.left, bounds.right, bounds.bottom, bounds.top], 
          transform=combi_transform, ax=ax)    

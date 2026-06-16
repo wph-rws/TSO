@@ -1,7 +1,6 @@
 import datetime
 import numpy as np
 import pandas as pd
-import pyproj
 import matplotlib.pyplot as plt
 import cmocean
 import yaml
@@ -18,14 +17,7 @@ from tso_functions import load_tso_parameters, load_project_dirs, get_location_i
 from read_datafile import read_datafile
 from plot_kaartje import plot_kaartje, transform_points, get_location_data_for_map
 
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 #%%
-@profile
 def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap, parameter, measurement_date, plot_manager, apply_smoothing=True):
     
     # Access properties from PlotManager instance
@@ -386,8 +378,6 @@ def polygon_area(vertices):
 
 #%%
 
-@profile
-@profile
 def plot_map_tso(mpnaam, ax, plot_manager):
     """Place the overview map panel on `ax`.
 
@@ -449,13 +439,7 @@ def _render_map_panel_bitmap(mpnaam, ax, plot_manager):
 
 def _draw_map_panel(mpnaam, ax, plot_manager):
 
-    # from pyproj import Transformer
-
-    # # Create a transformer object for converting RDNew to ETRS89 / UTM zone 31N
-    # transformer = Transformer.from_crs("EPSG:28992", "EPSG:25831", always_xy=True)
-
     xll, yll = plot_manager.xll, plot_manager.yll
-    # xll, yll = transformer.transform(xll, yll)
     
     dx, dy = plot_manager.dx, plot_manager.dy
     rotation_angle = plot_manager.rotation_angle
@@ -492,27 +476,6 @@ def _draw_map_panel(mpnaam, ax, plot_manager):
     else:
         ax.plot(xm_transformed, ym_transformed, color='black', linewidth=1.0)
         
-    # Transformation from RD --> ETRS --> RD causes some rotation
-    # is fixed by custom cropping of the map, not an ideal solution, but
-    # only working option for now where the coordinates for the ship route 
-    # still align with the map
-    xlim_map = ax.get_xlim()
-    ylim_map = ax.get_ylim()
-
-    if plot_manager.location == 'kvgt' and rotation_angle == -90:
-        xo = 325
-        yo = 1000
-    elif plot_manager.location == 'anka' and rotation_angle == -90:
-        xo = 165
-        yo = 550
-    else:
-        xo = 0
-        yo = 0
-    
-    # Apply new limits
-    ax.set_xlim(xlim_map[0] - xo, xlim_map[1] + xo)
-    ax.set_ylim(ylim_map[0] - yo, ylim_map[1] + yo)
-       
     ax.scatter(xm_transformed, ym_transformed, color='red', s=8, zorder=2)
     ax.set_title('Overzicht gevaren route', fontsize=plot_manager.label_fontsize) 
 
@@ -549,7 +512,6 @@ def _draw_map_panel(mpnaam, ax, plot_manager):
     """
 
 class PlotManager:
-    @profile
     def __init__(self, location, measurement_date='latest', plot_mode='single', parameters_multiple=None, multiple_offset=0):
         
         # Load common and location-specific parameters from YAML
@@ -610,15 +572,6 @@ class PlotManager:
         # Set gebiedscode
         self.gebiedscode = f'{self.location_code} TSO'
         
-        # Convert xll and yll to ETRS for 'anka' and 'kvgt'
-        if location in ('anka', 'kvgt'):
-            self.xll, self.yll = self.convert_xll_yll(self.xll, self.yll)
-
-    def convert_xll_yll(self, xll, yll):
-        transformer = pyproj.Transformer.from_crs('EPSG:28992', 'EPSG:28992', always_xy=True)
-        xll_etrs, yll_etrs = transformer.transform(xll, yll)
-        return xll_etrs, yll_etrs
-
     def set_location_variables(self, location):
         
         # Load common parameters from YAML
@@ -671,7 +624,6 @@ class PlotManager:
             self.ph_max = loc_params.get('ph_max', self.ph_max)
             self.oxy_max = loc_params.get('oxy_max', self.oxy_max)
 
-    @profile
     def create_figure(self):
         
         # Define the proportions for the axes        
@@ -694,7 +646,6 @@ class PlotManager:
         self.iter_dates = iter(self.date_range)
         self.axis_iterator = iter(self.axes)
 
-    @profile
     def load_data_cache(self):
         """Read the source data for each date in date_range exactly once."""
         self.data_cache = {}
@@ -714,21 +665,17 @@ class PlotManager:
             raise IndexError('No more axes available')
 
     # Definition of avalaible plot modes, expand when necessary
-    @profile
     def plot_salinity(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.sal_min, self.sal_max, self.sal_colorstep, 
                        self.sal_colorstep_factor, cmocean.cm.haline_r, 'CL-', self.meetdatum_output, self)
 
-    @profile
     def plot_temperature(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.temp_min, self.temp_max, self.temp_colorstep,
                        self.temp_colorstep_factor, 'jet', 'Temp', self.meetdatum_output, self)
 
-    @profile
     def plot_oxygen(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.oxy_min, self.oxy_max, self.oxy_colorstep, 
                        self.oxy_colorstep_factor, cmocean.cm.balance_r, 'O2', self.meetdatum_output, self)
-    @profile
     def plot_ph(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.ph_min, self.ph_max, self.ph_colorstep, 
                        self.ph_colorstep_factor, 'RdBu', 'pH', self.meetdatum_output, self)
@@ -737,11 +684,9 @@ class PlotManager:
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.turbid_min, self.turbid_max, self.turbid_colorstep, 
                        self.turbid_colorstep_factor, cmocean.cm.turbid, 'TURBID', self.meetdatum_output, self)    
     
-    @profile
     def plot_overview_map(self):
         plot_map_tso(self.mpnaam, self.next_axis(read_data=False), self)
 
-    @profile
     def plot_multiple_parameters(self):
         self.load_data_cache()
         for parameter in self.parameters_multiple:
@@ -763,7 +708,6 @@ class PlotManager:
             self.plot_overview_map()
             self.figures.append(self.fig)
 
-    @profile
     def save_figure(self):       
         
         if self.plot_mode == 'single':
@@ -782,7 +726,6 @@ class PlotManager:
             
 #%%
             
-@profile
 def process_plots(location, measurement_date='latest', plot_mode='single', parameters_multiple=None, multiple_offset=0):
     
     plot_manager = PlotManager(location, 
