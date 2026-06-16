@@ -17,18 +17,30 @@ However, you can adjust this by using the 'multiple_offset' parameter to select 
 
 from plot_measurement import process_plots
 
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
 # location = 'anka'
 # location = 'grev'
-location = 'grno'
+# location = 'grno'
 # location = 'kvgt'
-# location = 'veer'
+location = 'veer'
 # location = 'volk'
 # location = 'zoom'
 
 # %%
 
-process_plots(location)
+@profile
+def main():
+    process_plots(location)
 
-#%%
+    #%%
 
-process_plots(location, plot_mode='multiple')
+    # process_plots(location, plot_mode='multiple')
+
+
+if __name__ == '__main__':
+    main()

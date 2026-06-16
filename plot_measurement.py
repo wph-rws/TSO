@@ -18,7 +18,14 @@ from tso_functions import load_tso_parameters, load_project_dirs, get_location_i
 from read_datafile import read_datafile
 from plot_kaartje import plot_kaartje, transform_points, get_location_data_for_map
 
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
 #%%
+@profile
 def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap, parameter, measurement_date, plot_manager, apply_smoothing=True):
     
     # Access properties from PlotManager instance
@@ -62,7 +69,7 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
         graph_parameter_and_unit = 'Chloridegehalte (g/l)'
         clabel_fmt = '%1.1f'
     elif description_parameter == 'temperatuur':
-        graph_parameter_and_unit = 'Temperatuur ($^\circ$C)'
+        graph_parameter_and_unit = r'Temperatuur ($^\circ$C)'
     elif description_parameter == 'zuurstof':
         graph_parameter = '$O_2$'
     elif parameter.lower() == 'ph':
@@ -216,9 +223,14 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
     # Filter zi for values close to a contour level, cause this results in a lot of 
     # contour lines that clutter the figure
     tolerance = 0.02
-    for level in levels:
-        mask = np.abs(zi - level) < tolerance
-        zi[mask] = level
+
+    # Snap each value to the nearest contour level when within tolerance, in a
+    # single vectorized pass over the grid instead of one pass per level in a loop
+    nearest = levels[np.clip(np.searchsorted(levels, zi), 0, len(levels) - 1)]
+    lower = levels[np.clip(np.searchsorted(levels, zi) - 1, 0, len(levels) - 1)]
+    nearest = np.where(np.abs(zi - lower) < np.abs(zi - nearest), lower, nearest)
+    snap = np.abs(zi - nearest) < tolerance
+    zi[snap] = nearest[snap]
        
     # Test for extrema in data versus levels
     if np.all(np.isnan(zi)):
@@ -267,16 +279,35 @@ def plot_parameter(ax, df, mpnaam, vmin, vmax, colorstep, colorstep_factor, cmap
     # Generate a list of label positions
     label_positions = []
     vertex_lengths = []
-    
+
+    # Bodemlijn-interpolatie voor het wegfilteren van labels onder de bodem.
+    # Zelfde basis als de bodem-overlay (mpnaam_df['dist'], -1.01*z_fill) zodat de
+    # filtergrens exact overeenkomt met wat zichtbaar wordt afgedekt. np.interp vereist
+    # oplopende x, dus eerst sorteren.
+    bottom_x = np.asarray(mpnaam_df['dist'], dtype=float)
+    bottom_y = np.asarray(-1.01 * z_fill, dtype=float)
+    order = np.argsort(bottom_x)
+    bottom_x, bottom_y = bottom_x[order], bottom_y[order]
+    # Kleine marge (~2% van de y-as) zodat ook de labeltekst zelf niet in de overlay steekt.
+    label_margin = 0.02 * (ylim[1] - ylim[0])
+
     #%% Custom code to calculate number of contour labels
     for segment in contour_lines.allsegs:
-            
+
         # Get points of the path object (Numpy array inside a list)
         if len(segment[0]) > 0:
             vertices = segment[0]
         else:
-            continue                
-        
+            continue
+
+        # Filter vertices onder de bodemlijn weg, zodat labels niet achter de
+        # bodem-overlay vallen en het aantal labels op het zichtbare deel is gebaseerd
+        bottom_at_x = np.interp(vertices[:, 0], bottom_x, bottom_y)
+        keep = vertices[:, 1] > bottom_at_x + label_margin
+        vertices = vertices[keep]
+        if len(vertices) == 0:
+            continue
+
         # Calculate the total contour length by summing pairwise distances
         if len(vertices) > 1:
             
@@ -355,14 +386,75 @@ def polygon_area(vertices):
 
 #%%
 
+@profile
+@profile
 def plot_map_tso(mpnaam, ax, plot_manager):
-    
+    """Place the overview map panel on `ax`.
+
+    In multiple mode this panel is drawn identically for every parameter figure.
+    The full panel (basemap + grid + route + labels + scatter + title) is expensive
+    to build, so it is built once offscreen at the save dpi into an RGBA bitmap that
+    is reused on the following figures with a cheap `imshow`.
+    """
+    panel_key = ('panel_rgba', plot_manager.location)
+    if panel_key not in plot_manager.map_cache:
+        plot_manager.map_cache[panel_key] = _render_map_panel_bitmap(mpnaam, ax, plot_manager)
+
+    rgba, region = plot_manager.map_cache[panel_key]
+
+    # Hide the gridspec slot and place the cached panel (map box + ticks + title) on a
+    # dedicated overlay axes covering exactly the region the panel occupied when rendered,
+    # so its size and position match a natively drawn panel.
+    ax.set_axis_off()
+    overlay = ax.figure.add_axes(region)
+    overlay.set_axis_off()
+    overlay.imshow(rgba, aspect='auto', interpolation='none')
+
+
+def _render_map_panel_bitmap(mpnaam, ax, plot_manager):
+    """Render the map panel once offscreen at the save dpi and return its bitmap + region.
+
+    The offscreen figure copies the real figure size and the target ax position, so the
+    panel is drawn identically to a native render. The captured area is the axes' tight
+    bounding box (map box plus tick labels and title); the returned region (figure-fraction
+    [x0, y0, w, h]) is where that bitmap must be placed to reproduce the original layout.
+    """
+    fig = ax.figure
+    pos = ax.get_position()
+
+    off_fig = plt.figure(figsize=(fig.get_figwidth(), fig.get_figheight()),
+                         dpi=plot_manager.save_dpi)
+    try:
+        off_ax = off_fig.add_axes([pos.x0, pos.y0, pos.width, pos.height])
+        _draw_map_panel(mpnaam, off_ax, plot_manager)
+        off_fig.canvas.draw()
+
+        renderer = off_fig.canvas.get_renderer()
+        tight = off_ax.get_tightbbox(renderer)
+        region_bbox = tight.transformed(off_fig.transFigure.inverted())
+        region = [region_bbox.x0, region_bbox.y0, region_bbox.width, region_bbox.height]
+
+        buf = np.asarray(off_fig.canvas.buffer_rgba())
+        height, width = buf.shape[:2]
+        x0 = max(int(np.floor(tight.x0)), 0)
+        x1 = min(int(np.ceil(tight.x1)), width)
+        y0 = max(int(np.floor(tight.y0)), 0)
+        y1 = min(int(np.ceil(tight.y1)), height)
+        # The RGBA buffer has its origin at the top-left; tight bbox y runs from the bottom.
+        crop = buf[height - y1:height - y0, x0:x1].copy()
+    finally:
+        plt.close(off_fig)
+    return crop, region
+
+
+def _draw_map_panel(mpnaam, ax, plot_manager):
+
     # from pyproj import Transformer
-    
+
     # # Create a transformer object for converting RDNew to ETRS89 / UTM zone 31N
-    # transformer = Transformer.from_crs("EPSG:28992", "EPSG:25831", always_xy=True)   
-    
-    xll, yll = plot_manager.xll, plot_manager.yll    
+    # transformer = Transformer.from_crs("EPSG:28992", "EPSG:25831", always_xy=True)
+
+    xll, yll = plot_manager.xll, plot_manager.yll
     # xll, yll = transformer.transform(xll, yll)
     
     dx, dy = plot_manager.dx, plot_manager.dy
@@ -376,12 +468,18 @@ def plot_map_tso(mpnaam, ax, plot_manager):
     # else:
     #     xm_transformed, ym_transformed = transform_points(mpnaam.df['x'], mpnaam.df['y'], origin_x, origin_y, rotation_angle)
         
-    xm_transformed, ym_transformed = transform_points(mpnaam.df['x'], mpnaam.df['y'], origin_x, origin_y, rotation_angle)
+    route_key = ('route', plot_manager.location)
+    if route_key in plot_manager.map_cache:
+        xm_transformed, ym_transformed = plot_manager.map_cache[route_key]
+    else:
+        xm_transformed, ym_transformed = transform_points(mpnaam.df['x'], mpnaam.df['y'], origin_x, origin_y, rotation_angle)
+        plot_manager.map_cache[route_key] = (xm_transformed, ym_transformed)
 
     # Subplot map
     img_data, bbox = [], []
     ax, img_data, bbox = plot_kaartje(plot_manager.location, ax, img_data, type_kaart='map',
-                                      force_refresh_image=False, debug=False, rotation_angle=rotation_angle)
+                                      force_refresh_image=False, debug=False, rotation_angle=rotation_angle,
+                                      map_cache=plot_manager.map_cache)
     ax.tick_params(axis='both', which='major', labelsize=plot_manager.tick_fontsize)
     
     # Add annotations to the scatter plot
@@ -451,6 +549,7 @@ def plot_map_tso(mpnaam, ax, plot_manager):
     """
 
 class PlotManager:
+    @profile
     def __init__(self, location, measurement_date='latest', plot_mode='single', parameters_multiple=None, multiple_offset=0):
         
         # Load common and location-specific parameters from YAML
@@ -471,10 +570,12 @@ class PlotManager:
         else:
             self.parameters_multiple = parameters_multiple
 
-        self.clabel_fontsize = 4         
+        self.clabel_fontsize = 4
         self.datetime_now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.figures = []  # Storage list for 'multiple' mode
         self.ignored_points = {} # Points for which question about distance limit is already answered
+        self.map_cache = {}  # ax-independent map data, reused across parameters
+        self.save_dpi = 300  # dpi used to write the PDF; also used for the map bitmap
 
         # Plotting mode
         if plot_mode == 'single':
@@ -543,7 +644,7 @@ class PlotManager:
         if loc_params is None:
             raise ValueError(f'Unknown location: {location}')
         
-        # Retrieve map-related parameters using your existing function.
+        # Retrieve map-related parameters
         self.xll, self.yll, self.dx, self.dy = get_location_data_for_map(location)
         self.rotation_angle = loc_params['rotation_angle']
 
@@ -570,6 +671,7 @@ class PlotManager:
             self.ph_max = loc_params.get('ph_max', self.ph_max)
             self.oxy_max = loc_params.get('oxy_max', self.oxy_max)
 
+    @profile
     def create_figure(self):
         
         # Define the proportions for the axes        
@@ -592,28 +694,41 @@ class PlotManager:
         self.iter_dates = iter(self.date_range)
         self.axis_iterator = iter(self.axes)
 
+    @profile
+    def load_data_cache(self):
+        """Read the source data for each date in date_range exactly once."""
+        self.data_cache = {}
+        for date in self.date_range:
+            df, meetdatum_output, mpnaam, self.ignored_points = read_datafile(
+                self.location, date, self.ignored_points, plot_mode='multiple')
+            self.data_cache[date] = (df, meetdatum_output, mpnaam)
+
     def next_axis(self, read_data=True):
         try:
             next_axis = next(self.axis_iterator)
             if self.plot_mode == 'multiple' and read_data:
-                self.df, self.meetdatum_output, self.mpnaam, self.ignored_points = read_datafile(self.location, next(self.iter_dates), 
-                                                                                            self.ignored_points, plot_mode='multiple')
+                date = next(self.iter_dates)
+                self.df, self.meetdatum_output, self.mpnaam = self.data_cache[date]
             return next_axis
         except StopIteration:
             raise IndexError('No more axes available')
 
     # Definition of avalaible plot modes, expand when necessary
+    @profile
     def plot_salinity(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.sal_min, self.sal_max, self.sal_colorstep, 
                        self.sal_colorstep_factor, cmocean.cm.haline_r, 'CL-', self.meetdatum_output, self)
 
+    @profile
     def plot_temperature(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.temp_min, self.temp_max, self.temp_colorstep,
                        self.temp_colorstep_factor, 'jet', 'Temp', self.meetdatum_output, self)
 
+    @profile
     def plot_oxygen(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.oxy_min, self.oxy_max, self.oxy_colorstep, 
                        self.oxy_colorstep_factor, cmocean.cm.balance_r, 'O2', self.meetdatum_output, self)
+    @profile
     def plot_ph(self):
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.ph_min, self.ph_max, self.ph_colorstep, 
                        self.ph_colorstep_factor, 'RdBu', 'pH', self.meetdatum_output, self)
@@ -622,10 +737,13 @@ class PlotManager:
         plot_parameter(self.next_axis(), self.df, self.mpnaam, self.turbid_min, self.turbid_max, self.turbid_colorstep, 
                        self.turbid_colorstep_factor, cmocean.cm.turbid, 'TURBID', self.meetdatum_output, self)    
     
+    @profile
     def plot_overview_map(self):
         plot_map_tso(self.mpnaam, self.next_axis(read_data=False), self)
 
+    @profile
     def plot_multiple_parameters(self):
+        self.load_data_cache()
         for parameter in self.parameters_multiple:
             self.create_figure()
             self.reset_iterators()
@@ -645,16 +763,17 @@ class PlotManager:
             self.plot_overview_map()
             self.figures.append(self.fig)
 
+    @profile
     def save_figure(self):       
         
         if self.plot_mode == 'single':
-            self.fig.savefig(self.filename, format='pdf', dpi=300)
+            self.fig.savefig(self.filename, format='pdf', dpi=self.save_dpi)
             plt.close(self.fig)
             print(f'Figure saved as "{self.filename}"')
         elif self.plot_mode == 'multiple':
             with PdfPages(self.filename) as pdf:
                 for fig in self.figures:
-                    pdf.savefig(fig, dpi=300)
+                    pdf.savefig(fig, dpi=self.save_dpi)
                     plt.close(fig)
             print(f'All figures saved as "{self.filename}"')
         else:
@@ -663,6 +782,7 @@ class PlotManager:
             
 #%%
             
+@profile
 def process_plots(location, measurement_date='latest', plot_mode='single', parameters_multiple=None, multiple_offset=0):
     
     plot_manager = PlotManager(location, 
