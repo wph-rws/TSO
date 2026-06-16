@@ -12,12 +12,6 @@ from functools import lru_cache
 from pathlib import Path
 from pyproj import Transformer
 
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 #%% Load all files
 
 def generate_filelist(location, measurement_date='latest'):
@@ -64,7 +58,6 @@ def generate_filelist(location, measurement_date='latest'):
 
 #%% Function to get all directories with indiviudal measurement files
 
-@profile
 def get_all_datafiles(location, plot_mode='single'):
     
     # Get location code
@@ -159,7 +152,6 @@ def find_dirname_measurement(location, measurement_date='latest'):
 
 #%% Function to find the filename of a datafile
 
-@profile
 def find_filename_datafile(location, measurement_date='latest', plot_mode='single'):
     
     filelist_datafiles = get_all_datafiles(location, plot_mode)
@@ -204,7 +196,6 @@ def find_filename_datafile(location, measurement_date='latest', plot_mode='singl
 
 #%% Function to get location code or location name from location
 
-@profile
 @lru_cache(maxsize=None)
 def get_location_info(location):
     
@@ -254,7 +245,6 @@ def determine_filetype(directory):
 # %%
 
 class MPNaam:
-    @profile
     def __init__(self, location):
         
         # Set location
@@ -266,7 +256,6 @@ class MPNaam:
         # Read data into dataframe
         self.df = self.read_mpnaam()
 
-    @profile
     def read_mpnaam(self):       
         
         # Load directory for individual files
@@ -354,7 +343,6 @@ class MPNaam:
 #%%
 
 # Function that loads all predefined parameters
-@profile
 @lru_cache(maxsize=None)
 def load_tso_parameters():
 
@@ -367,7 +355,6 @@ def load_tso_parameters():
     return parameters
 
 # Function that loads the project directories
-@profile
 @lru_cache(maxsize=None)
 def load_project_dirs():
     

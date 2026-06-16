@@ -10,12 +10,6 @@ from tso_functions import (
     update_filelist_with_missing_locs,
 )
 
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 #%% Read data file of measurement
 
 def _build_source_file_lookup(location, measurement_date, mpnaam):
@@ -56,7 +50,6 @@ def _build_source_file_lookup(location, measurement_date, mpnaam):
 
     return source_files
 
-@profile
 def read_datafile(location, measurement_date='latest', ignored_points={}, plot_mode='single'):
    
     # Find filename
@@ -178,13 +171,13 @@ def read_datafile(location, measurement_date='latest', ignored_points={}, plot_m
         df_colnames_raw[filename] = cols_raw   
     
         try:
-            df = pd.read_csv(StringIO(filtered_text_pandas), sep='\s+', header=None, na_values=9999)
+            df = pd.read_csv(StringIO(filtered_text_pandas), sep=r'\s+', header=None, na_values=9999)
         except Exception as e:
             print(f'First try reading data failed, error:\n{e} \nTry againt with adjusted number of columns')
             
         try:
             max_columns = max(len(line.split()) for line in StringIO(filtered_text_pandas))
-            df = pd.read_csv(StringIO(filtered_text_pandas), sep='\s+', header=None, na_values=9999, names=np.arange(0, max_columns))     
+            df = pd.read_csv(StringIO(filtered_text_pandas), sep=r'\s+', header=None, na_values=9999, names=np.arange(0, max_columns))     
         except Exception as e:
             raise ValueError(f'Second try reading data also failed, error:\n{e}')
         
