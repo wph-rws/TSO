@@ -1,4 +1,17 @@
 import os
+import sys
+
+# Ensure GDAL can find its support data files (e.g. gdalvrt.xsd) before importing
+# geopandas/rasterio. In conda environments GDAL_DATA is often not set, which triggers
+# "Cannot find gdalvrt.xsd" warnings during reprojection. Derive it from the active
+# environment if it isn't already defined.
+if not os.environ.get('GDAL_DATA'):
+    for _gdal_data in (os.path.join(sys.prefix, 'Library', 'share', 'gdal'),  # Windows/conda
+                       os.path.join(sys.prefix, 'share', 'gdal')):            # Unix/conda
+        if os.path.isfile(os.path.join(_gdal_data, 'gdalvrt.xsd')):
+            os.environ['GDAL_DATA'] = _gdal_data
+            break
+
 import numpy as np
 import pandas as pd
 import requests
@@ -24,6 +37,12 @@ from owslib.wms import WebMapService
 
 from tso_functions import load_project_dirs
 
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
 """
 Functie voor het plotten van het kaartje in de hoek van de profielen.
    - gebiedscode is RW/RO/SW/SO/HW/HO/RP of een van de TSO-trajecten
@@ -38,7 +57,8 @@ cs_etrs = 'EPSG:25831' # ETRS89 / UTM zone 31N (EPSG:25831)
 
 # cs_etrs = cs_rd
 
-def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', force_refresh_image=False, debug=False, rotation_angle=0):
+@profile
+def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', force_refresh_image=False, debug=False, rotation_angle=0, map_cache=None):
  
     type_kaarten = ('map', 'feature')
     if type_kaart not in type_kaarten:
@@ -122,7 +142,7 @@ def plot_kaartje(location, ax, img_data, type_kaart='map', layer='terreinvlak', 
         
         # Rotate map for new map or for map loaded from file
         if rotation_angle != 0:
-            ax, img_data, bbox = rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox)
+            ax, img_data, bbox = rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox, map_cache=map_cache)
 
         else:
             # Define the spatial extent of the image
@@ -259,6 +279,7 @@ def get_new_map(location, bbox, layer, coord_system, output_format, transparent,
 
     return img  
     
+@profile
 def get_location_data_for_map(location):
     
     # Load data from YAML file
@@ -328,7 +349,8 @@ def transform_points(x, y, origin_x, origin_y, angle_degrees):
     
     return x_final, y_final
 
-def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox):    
+@profile
+def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox, map_cache=None):
    
     # Coördinaten transformeren naar Europees coördinatenstelsel, anders
     # sluiten kaarten niet goed op elkaar aan
@@ -345,13 +367,17 @@ def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox):
     dy = bbox[3] - bbox[1]
     xur, yur = xll + dx, yll + dy   
 
-    image_data = np.array(img_data)    
-    image_path = f'images/{location}.tif'    
-    reprojected_image_path = f'images/{location}_reprojected.tif'  
-    
+    image_path = f'images/{location}.tif'
+    reprojected_image_path = f'images/{location}_reprojected.tif'
+
     # Reproject image, rotation is always done later and not saved as file
     if not os.path.exists(reprojected_image_path):
-    
+
+        # Decode the PNG to an array. Only needed when (re)creating the GeoTIFF;
+        # np.array() forces the full pixel decode (expensive), so keep it out of
+        # the hot path once the reprojected TIFF exists on disk.
+        image_data = np.array(img_data)
+
         transform = (Affine.translation(xll, yll+dy)
                      * Affine.scale(dx / image_data.shape[1], dy / image_data.shape[0])
                      * Affine.scale(1, -1))       
@@ -390,17 +416,27 @@ def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox):
                         nodata=None,
                         resampling=Resampling.nearest)
 
-    # Open the reprojected image
-    with rasterio.open(reprojected_image_path) as src:
-        image_data = src.read()
-        transform_of_image = src.transform
-        bounds = src.bounds
-        
-    # Rotate each color band, stack array, transpose for correct order for show()
-    rotated_bands = [ndimage.rotate(band, rotation_angle, reshape=True) for band in image_data]
-    rotated_rgba = np.dstack([rotated_bands[i] for i in range(4)])  
-    rotated_rgba_tr = np.transpose(rotated_rgba, [2, 0, 1])
-    
+    # Read the reprojected image and rotate it. This is the expensive, ax-independent
+    # step (GeoTIFF read + ndimage.rotate on 4 bands), identical for every parameter,
+    # so cache the result and reuse it across figures.
+    rot_key = ('rotated', location, rotation_angle)
+    if map_cache is not None and rot_key in map_cache:
+        rotated_rgba_tr, transform_of_image, bounds = map_cache[rot_key]
+    else:
+        # Open the reprojected image
+        with rasterio.open(reprojected_image_path) as src:
+            image_data = src.read()
+            transform_of_image = src.transform
+            bounds = src.bounds
+
+        # Rotate each color band, stack array, transpose for correct order for show()
+        rotated_bands = [ndimage.rotate(band, rotation_angle, reshape=True) for band in image_data]
+        rotated_rgba = np.dstack([rotated_bands[i] for i in range(4)])
+        rotated_rgba_tr = np.transpose(rotated_rgba, [2, 0, 1])
+
+        if map_cache is not None:
+            map_cache[rot_key] = (rotated_rgba_tr, transform_of_image, bounds)
+
     if location in ('anka', 'kvgt'):       
         
         # ETRS89 / UTM zone 31N (EPSG:25831) to RD New (EPSG:28992)
@@ -460,14 +496,21 @@ def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox):
     ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5))  # Set number of x-ticks
     ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=4))  # Set number of y-ticks
 
-    # Get the x and y ticks
-    x_ticks = ax.get_xticks()
-    y_ticks = ax.get_yticks()
-    
-    if np.abs(rotation_angle) == 90:    
-        
+    # The ticks must be fetched AFTER the final (cropped) limits are set: MaxNLocator
+    # recomputes the tick labels for the active view, so reading them on the pre-crop
+    # view (the full image bbox) leaves the grid anchored to a different step than the
+    # labels that are actually rendered. Pull them from the locator on the final limits
+    # so grid lines and y-axis labels stay in sync for every location.
+    def _ticks_for(axis, lim):
+        return axis.get_major_locator().tick_values(min(lim), max(lim))
+
+    if np.abs(rotation_angle) == 90:
+
         ax.set_xlim(ylims)
         ax.set_ylim(xlims)
+
+        x_ticks = _ticks_for(ax.xaxis, ax.get_xlim())
+        y_ticks = _ticks_for(ax.yaxis, ax.get_ylim())
 
         # Calculate new ticks based on the rotation angle
         dy_grid = xlims[1] - xlims[0]
@@ -475,19 +518,22 @@ def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox):
 
         dx_grid = ylims[1] - ylims[0]
         interval_y_ticks = y_ticks[1] - y_ticks[0]
-        
+
         # Set rotation_angle to zero for gridlines and switch xlims and ylims
         rotation_angle = 0
         xlims_temp = xlims
         ylims_temp = ylims
         xlims = ylims_temp
-        ylims = xlims_temp        
-        
+        ylims = xlims_temp
+
     else:
-        
+
         ax.set_xlim(xlims)
         ax.set_ylim(ylims)
-        
+
+        x_ticks = _ticks_for(ax.xaxis, ax.get_xlim())
+        y_ticks = _ticks_for(ax.yaxis, ax.get_ylim())
+
         # Calculate new ticks based on the rotation angle
         dy_grid = ylims[1] - ylims[0]
         interval_x_ticks = x_ticks[1] - x_ticks[0]
@@ -517,8 +563,8 @@ def rotate_image(location, ax, img_data, coord_system, rotation_angle, bbox):
         ax.plot([xlims[0], xlims[1]], [y_start, y_end], color='gray', linewidth=0.5, alpha=0.5)
                
     bbox = bounds
-  
-    return ax, image_data, bbox
+
+    return ax, rotated_rgba_tr, bbox
 
 #%%
     

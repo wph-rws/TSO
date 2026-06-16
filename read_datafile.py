@@ -10,6 +10,12 @@ from tso_functions import (
     update_filelist_with_missing_locs,
 )
 
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
 #%% Read data file of measurement
 
 def _build_source_file_lookup(location, measurement_date, mpnaam):
@@ -50,6 +56,7 @@ def _build_source_file_lookup(location, measurement_date, mpnaam):
 
     return source_files
 
+@profile
 def read_datafile(location, measurement_date='latest', ignored_points={}, plot_mode='single'):
    
     # Find filename
