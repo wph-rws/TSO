@@ -606,6 +606,7 @@ class PlotManager:
         self.sal_max = loc_params['sal_max']
         self.sal_colorstep = loc_params['sal_colorstep']
         self.sal_colorstep_factor = loc_params['sal_colorstep_factor']
+        self.temp_max = loc_params.get('temp_max', self.temp_max)
 
         # Handle extra settings for certain locations
         if location == 'volk':

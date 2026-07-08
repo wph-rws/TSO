@@ -1,0 +1,21 @@
+# VERTIKAAL 1 Milieucontainer
+* 25-06-2026 08:37:31
+#X: 74629 - Y: 384207
+#06 PROJECTCODE: ZTS-ATS-vertikalen
+#00 DONARLOCATIE: ZTS-39
+#08 WAARNEMER(S): Hofman
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: ATS39
+#23 EINDPUNT: ATS46
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74629  384207 20260625 83732    1.04    5.31   24.46   8.23    1.65     151    0.84     372    2.17       5.86      0.15
+  74629  384207 20260625 83744    2.06    3.81   24.45   8.23    1.66     151    0.84     373    2.14       8.79      0.30
+  74629  384207 20260625 83749    2.93    3.39   24.45   8.22    1.66     151    0.85     374    2.16      13.17      0.14
+  74629  384207 20260625 83757    3.98    2.20   24.45   8.24    1.66     152    0.85     375    2.13       6.57      0.17
+  74629  384207 20260625 83810    4.99    1.21   24.45   8.24    1.66     152    0.85     376    1.98       6.12      0.18
+  74629  384207 20260625 83824    5.98    0.31   24.45   8.23    1.67     152    0.85     376    2.29      17.57      0.28
+  

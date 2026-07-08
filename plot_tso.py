@@ -16,12 +16,12 @@ However, you can adjust this by using the 'multiple_offset' parameter to select 
 """
 
 from plot_measurement import process_plots
-
+# 
 # location = 'anka'
 # location = 'grev'
 # location = 'grno'
-location = 'kvgt'
-# location = 'veer'
+# location = 'kvgt'
+location = 'veer'
 # location = 'volk'
 # location = 'zoom'
 
@@ -30,10 +30,7 @@ location = 'kvgt'
 def main():
     process_plots(location)
 
-    #%%
-
-    # process_plots(location, plot_mode='multiple')
-
+    process_plots(location, plot_mode='multiple')
 
 if __name__ == '__main__':
     main()

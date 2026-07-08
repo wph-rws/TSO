@@ -37,6 +37,7 @@ locations:
     sal_max: 18.5
     sal_colorstep: 0.5
     sal_colorstep_factor: 2
+    temp_max: 28
 
   kvgt:
     rotation_angle: -90
