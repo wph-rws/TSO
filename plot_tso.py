@@ -1,4 +1,4 @@
-"""
+"""y
 For processing a new measurement, first run 'process_locations.py', and then 
 create a new data file using 'create_datafile.py'.
 
@@ -16,14 +16,14 @@ However, you can adjust this by using the 'multiple_offset' parameter to select 
 """
 
 from plot_measurement import process_plots
-# 
+# y
 # location = 'anka'
 # location = 'grev'
 # location = 'grno'
 # location = 'kvgt'
-location = 'veer'
+# location = 'veer'
 # location = 'volk'
-# location = 'zoom'
+location = 'zoom'
 
 # %%
 

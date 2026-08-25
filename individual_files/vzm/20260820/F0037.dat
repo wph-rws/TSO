@@ -1,0 +1,20 @@
+# VERTIKAAL 1 Milieucontainer
+* 21-08-2026 07:44:53
+#X: 74561 - Y: 385828
+#06 PROJECTCODE: ZTS-ATS-vertikalen
+#00 DONARLOCATIE: ZTS-37
+#08 WAARNEMER(S): Damen
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: GTS29
+#23 EINDPUNT: GTS21
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74559  385825 20260821 74556    0.93      --   21.57   8.66    1.73     167    0.94     428    0.63      12.66      1.57
+  74559  385825 20260821 74616    1.99      --   21.52   8.67    1.72     167    0.94     427    0.56      11.65      1.21
+  74559  385825 20260821 74620    2.98      --   21.53   8.67    1.72     167    0.94     427    0.65      12.18      1.21
+  74559  385825 20260821 74625    3.99      --   21.53   8.67    1.72     167    0.94     427    0.55      11.32      1.03
+  74559  385825 20260821 74630    4.92      --   21.53   8.67    1.72     167    0.94     427    0.56      12.14      1.21
+  74559  385825 20260821 74639    5.95      --   21.54   8.67    1.72     167    0.94     427    0.63      11.94      1.35

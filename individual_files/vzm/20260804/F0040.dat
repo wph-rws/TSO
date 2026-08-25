@@ -1,0 +1,12 @@
+# VERTIKAAL 2 Milieucontainer
+* 04-08-2026 07:55:02
+#X: 74813 - Y: 382676
+#00 DONARLOCATIE: ZTS-40
+#08 WAARNEMER(S): Hofman
+@ par1.dat
+## LUCHTDK    hPa <1010>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74813  382676 20260804 75523    1.09    4.48   23.90   8.77    1.81     167    0.94     428    1.41      12.40      1.86
+  74813  382676 20260804 75535    2.05    2.46   23.91   8.76    1.82     168    0.94     430    1.49      13.22      1.79
+  74813  382676 20260804 75542    2.98    0.34   23.91   8.76    1.83     169    0.95     435    1.52      11.92      1.79

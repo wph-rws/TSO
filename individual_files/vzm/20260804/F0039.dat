@@ -1,0 +1,20 @@
+# VERTIKAAL 1 Milieucontainer
+* 04-08-2026 07:45:22
+#X: 74652 - Y: 384094
+#06 PROJECTCODE: ZTS ATS
+#00 DONARLOCATIE: ZTS-39
+#08 WAARNEMER(S): Hofman
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: Kreekrak
+#23 EINDPUNT: Kreekrak
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+## LUCHTDK    hPa <1010>
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  74652  384094 20260804 74539    0.98    4.66   23.61   8.73    1.33     123    0.68     281    0.98      10.91      1.81
+  74652  384094 20260804 74548    2.10    3.47   23.62   8.73    1.36     126    0.70     287    0.79      12.51      1.49
+  74652  384094 20260804 74557    2.98    2.64   23.62   8.73    1.38     128    0.71     295    0.82      10.93      2.26
+  74652  384094 20260804 74606    3.97    1.46   23.61   8.72    1.40     130    0.72     301    0.93      11.62      1.91
+  74652  384094 20260804 74617    4.97    0.62   23.60   8.72    1.43     132    0.74     309    0.89      12.41      1.56

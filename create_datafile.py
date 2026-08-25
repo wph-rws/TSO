@@ -44,9 +44,9 @@ Script Structure:
 # locations = ['grev']
 # locations = ['grno']
 # locations = ['kvgt']
-locations = ['veer']
+# locations = ['veer']
 # locations = ['volk']
-# locations = ['zoom']
+locations = ['zoom']
 
 # locations = ['anka', 'volk', 'zoom']
 # locations = ['grev', 'grno']

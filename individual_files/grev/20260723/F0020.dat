@@ -1,0 +1,19 @@
+# VERTIKAAL 1 Milieucontainer
+* 23-07-2026 07:22:34
+#X: 69226 - Y: 411002
+#06 PROJECTCODE: GTS-vertikalen
+#00 DONARLOCATIE: GTS-20
+#08 WAARNEMER(S): bernaards
+#21 MEETGEBIED: Zeeland
+#22 STARTPUNT: gts 20
+#23 EINDPUNT: gts 1
+#51 OPDRACHTGEVER: WVL
+#52 BEHEERDER: Mobiel Meten
+@ par1.dat
+
+~     X       Y    DATUM   TIJD SENSHTE   Echms       T     pH   O2     %O2   GELBH  GELDHD  SALNTT     CL- CHLFRFU  TROEBHFNU  PHYCOUGL
+  69226  411002 20260723 72244    0.94      --   20.90   8.01 7.07      94   44.84    4399   31.81   17996    2.19       0.97      0.48
+  69226  411002 20260723 72315    2.00      --   20.89   8.01 7.02      94   44.80    4397   31.79   17988    2.31       1.05      0.07
+  69226  411002 20260723 72329    2.99      --   20.89   8.01 6.99      93   44.81    4397   31.79   17988    2.20       1.11      0.12
+  69226  411002 20260723 72350    4.02      --   20.89   8.01 6.99      93   44.80    4397   31.79   17987    2.34       0.96      0.06
+  69226  411002 20260723 72412    4.99      --   20.86   8.00 6.79      91   44.81    4400   31.82   18001    2.18       1.04      0.28
