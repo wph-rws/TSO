@@ -224,7 +224,7 @@ def proces_individual_files(location, measurement_date='latest'):
         rename_data_files(tso_subdirs, tso_selected_dir, i_dir)
         
         # Creation of naarmat-file only for *.dat files, *.csv will not work
-        new_date = tso_subdirs['Datum'].iloc[-1]
+        new_date = tso_subdirs['Datum'].iloc[i_dir]
         naarmat_filename = [f'_Naarmat{location}' for location in tso_locations]
         change_naarmat_file(tso_dir, tso_selected_dir, naarmat_filename, new_date)
         
